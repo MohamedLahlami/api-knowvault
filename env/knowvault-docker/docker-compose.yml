@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  db-knowvault:
+    image: postgres
+    environment:
+      POSTGRES_USER: knowvault-user
+      POSTGRES_PASSWORD: knowvault-pass
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: knowvault-db
+    ports:
+      - 5432:5432
+    volumes:
+      - ../sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - PG-DATA-KnowVault:/var/lib/postgresql/data
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.5
+    command: start-dev --import-realm
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=password
+      - KEYCLOAK_LOGLEVEL= DEBUG
+    ports:
+      - 8080:8080
+    volumes:
+      - ./data:/opt/keycloak/data/import
+    depends_on:
+      - db-knowvault
+
+volumes:
+  PG-DATA-KnowVault:
