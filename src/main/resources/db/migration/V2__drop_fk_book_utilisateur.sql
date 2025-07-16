@@ -1,0 +1,1 @@
+ALTER TABLE book DROP CONSTRAINT IF EXISTS fk_book_utilisateur;

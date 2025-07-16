@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -15,12 +16,11 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class Utilisateur {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
     private String login;
-    private String nom;
-    private String prenom;
-    private String idTypePosteUtilisateur;
-    private OffsetDateTime dateCreation;
-    private OffsetDateTime dateModification;
+    private String lastName;
+    private String firstName;
+    private String idUserType;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 }
