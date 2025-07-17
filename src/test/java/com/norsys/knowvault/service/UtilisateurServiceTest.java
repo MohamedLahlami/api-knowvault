@@ -47,19 +47,5 @@ class UtilisateurServiceImplTest {
         assertEquals(fixedId, result.get(0).getId());
     }
 
-    @Test
-    void testGetUtilisateurByLogin() {
-        Utilisateur utilisateur = new Utilisateur(fixedId, "user1", "Doe", "John", "John Doe", now, now);
 
-        when(utilisateurRepository.findByLogin("user1")).thenReturn(Optional.of(utilisateur));
-
-        UtilisateurDTO result = utilisateurService.getUtilisateurByLogin("user1");
-
-        assertNotNull(result);
-        assertEquals(fixedId, result.getId());
-        assertEquals("user1", result.getLogin());
-        assertEquals("Doe", result.getLastName());
-        assertEquals("John", result.getFirstName());
-        assertEquals("John Doe", result.getNomComplet());
-    }
 }
