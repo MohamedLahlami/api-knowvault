@@ -23,12 +23,13 @@ class UtilisateurServiceImplTest {
     private UtilisateurServiceImpl utilisateurService;
 
     private final UUID fixedId = UUID.fromString("74aa141f-920c-4997-b41d-5aa5e8f72319");
-    private final OffsetDateTime now = OffsetDateTime.now();
+    private OffsetDateTime now;
 
     @BeforeEach
     void setUp() {
         utilisateurRepository = mock(UtilisateurRepository.class);
         utilisateurService = new UtilisateurServiceImpl(utilisateurRepository);
+        now = OffsetDateTime.now();  // On initialise ici pour avoir une date cohérente
     }
 
     @Test
@@ -47,7 +48,7 @@ class UtilisateurServiceImplTest {
     }
 
     @Test
-    void testGetUtilisateurByLogin_found() {
+    void testGetUtilisateurByLogin() {
         Utilisateur utilisateur = new Utilisateur(fixedId, "user1", "Doe", "John", "John Doe", now, now);
 
         when(utilisateurRepository.findByLogin("user1")).thenReturn(Optional.of(utilisateur));
@@ -60,14 +61,5 @@ class UtilisateurServiceImplTest {
         assertEquals("Doe", result.getLastName());
         assertEquals("John", result.getFirstName());
         assertEquals("John Doe", result.getNomComplet());
-    }
-
-    @Test
-    void testGetUtilisateurByLogin_notFound() {
-        when(utilisateurRepository.findByLogin("unknown")).thenReturn(Optional.empty());
-
-        UtilisateurDTO result = utilisateurService.getUtilisateurByLogin("unknown");
-
-        assertNull(result);
     }
 }

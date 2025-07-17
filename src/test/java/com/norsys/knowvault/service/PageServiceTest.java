@@ -92,7 +92,7 @@ public class PageServiceTest {
     public void testDelete() {
         Long id = 1L;
         when(pageRepository.existsById(id)).thenReturn(true);
-        doNothing().when(pageRepository).deleteById(id);
+
 
         pageService.delete(id);
 

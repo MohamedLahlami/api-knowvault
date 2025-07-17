@@ -29,7 +29,7 @@ class BookServiceImplTest {
     private final UUID testUserId = UUID.fromString("74aa141f-920c-4997-b41d-5aa5e8f72319");
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         bookRepository = mock(BookRepository.class);
         utilisateurRepository = mock(UtilisateurRepository.class);
         shelfRepository = mock(ShelfRepository.class);
@@ -37,7 +37,7 @@ class BookServiceImplTest {
     }
 
     @Test
-    void testCreate() {
+    public void testCreate() {
         BookDTO dto = new BookDTO();
         dto.setId(null);
         dto.setBookTitle("Title 1");
@@ -68,7 +68,7 @@ class BookServiceImplTest {
     }
 
     @Test
-    void testFindAll() {
+    public void testFindAll() {
         Shelf shelf1 = new Shelf();
         shelf1.setId(1L);
 
@@ -102,7 +102,7 @@ class BookServiceImplTest {
     }
 
     @Test
-    void testFindById_found() {
+    public void testFindById_found() {
         Shelf shelf = new Shelf();
         shelf.setId(1L);
 
@@ -123,7 +123,7 @@ class BookServiceImplTest {
     }
 
     @Test
-    void testUpdate() {
+    public void testUpdate() {
         Shelf oldShelf = new Shelf();
         oldShelf.setId(1L);
 
@@ -154,10 +154,15 @@ class BookServiceImplTest {
 
     @Test
     void testDelete() {
-        doNothing().when(bookRepository).deleteById(1L);
+        Long id = 1L;
 
-        bookService.delete(1L);
+        when(bookRepository.findById(id))
+                .thenReturn(Optional.of(new Book()));
 
-        verify(bookRepository, times(1)).deleteById(1L);
+        when(bookRepository.existsById(id)).thenReturn(true);
+
+        bookService.delete(id);
+
+        verify(bookRepository, times(1)).deleteById(id);
     }
 }

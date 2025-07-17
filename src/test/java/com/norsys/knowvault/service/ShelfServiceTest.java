@@ -90,19 +90,16 @@ class ShelfServiceImplTest {
 
     @Test
     void testDelete() {
-        ShelfDTO dto = new ShelfDTO(2L, "Shelf 1", "Description", Tag.JAVA);
-        Shelf savedShelf = new Shelf(1L, "Shelf 1", "Description", Tag.JAVA, null);
 
-        shelfRepository.save(savedShelf);
+        when(shelfRepository.findById(1L))
+                .thenReturn(Optional.of(new Shelf(1L, "Label", "Description", Tag.JAVA, null)));
 
-        ShelfDTO result = shelfService.create(dto);
-
-        doNothing().when(shelfRepository).deleteById(1L);
+        Long id = 1L;
+        when(shelfRepository.existsById(id)).thenReturn(true);
 
         shelfService.delete(1L);
 
-        verify(shelfService, times(1)).delete(1L);
+        verify(shelfRepository, times(1)).deleteById(1L);
     }
-
-
 }
+

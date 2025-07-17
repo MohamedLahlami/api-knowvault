@@ -105,7 +105,8 @@ class ChapterServiceImplTest {
 
     @Test
     void testDelete() {
-        doNothing().when(chapterRepository).deleteById(1L);
+        Long id = 1L;
+        when(chapterRepository.existsById(id)).thenReturn(true);
 
         chapterService.delete(1L);
 
