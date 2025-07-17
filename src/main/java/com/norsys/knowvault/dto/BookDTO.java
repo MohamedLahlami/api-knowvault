@@ -1,12 +1,16 @@
 package com.norsys.knowvault.dto;
 
 import com.norsys.knowvault.model.Book;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class BookDTO {
     private Long id;
