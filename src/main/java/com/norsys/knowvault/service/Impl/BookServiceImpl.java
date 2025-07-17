@@ -2,6 +2,7 @@ package com.norsys.knowvault.service.Impl;
 
 import com.norsys.knowvault.dto.BookDTO;
 import com.norsys.knowvault.model.Book;
+import com.norsys.knowvault.model.Chapter;
 import com.norsys.knowvault.model.Shelf;
 import com.norsys.knowvault.model.Utilisateur;
 import com.norsys.knowvault.repository.BookRepository;
@@ -39,7 +40,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDTO> findAll() {
-        return BookDTO.toDtoList(bookRepository.findAll());
+        List<Book> books = bookRepository.findAllWithChapters();
+
+        for (Book book : books) {
+            for (Chapter chapter : book.getChapters()) {
+                chapter.getPages().size();
+            }
+        }
+
+        return BookDTO.toDtoList(books);
     }
 
     @Override

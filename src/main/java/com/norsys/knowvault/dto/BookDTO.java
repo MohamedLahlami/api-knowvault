@@ -13,6 +13,7 @@ public class BookDTO {
     private String bookTitle;
     private UUID utilisateurId;
     private Long shelfId;
+    private int pageCount;
 
     public static BookDTO toDto(Book book) {
         if (book == null) return null;
@@ -27,6 +28,16 @@ public class BookDTO {
             dto.setShelfId(book.getShelf().getId());
         }
 
+        int pageCount = 0;
+        if (book.getChapters() != null) {
+            for (var chapter : book.getChapters()) {
+                if (chapter.getPages() != null) {
+                    pageCount += chapter.getPages().size();
+                }
+            }
+        }
+
+        dto.setPageCount(pageCount);
         return dto;
     }
 
