@@ -1,13 +1,17 @@
 package com.norsys.knowvault.dto;
 
 import com.norsys.knowvault.model.Utilisateur;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UtilisateurDTO {
     private UUID id;
     private String login;

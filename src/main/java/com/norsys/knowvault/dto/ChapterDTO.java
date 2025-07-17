@@ -1,12 +1,16 @@
 package com.norsys.knowvault.dto;
 
 import com.norsys.knowvault.model.Chapter;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ChapterDTO {
     private Long id;
     private String chapterTitle;

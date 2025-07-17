@@ -2,12 +2,16 @@ package com.norsys.knowvault.dto;
 
 import com.norsys.knowvault.enumerator.PageStatus;
 import com.norsys.knowvault.model.Page;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PageDTO {
     private Long id;
     private Integer pageNumber;
