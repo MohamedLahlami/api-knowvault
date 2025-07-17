@@ -35,7 +35,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers("/api/shelf/**").permitAll()
+                    .requestMatchers("/api/book/**").permitAll()
+                    .requestMatchers("/api/chapter/**").permitAll()
+                    .requestMatchers("/api/page/**").permitAll()
+                    .requestMatchers("/api/comment/**").permitAll()
+                    .requestMatchers("/api/history/**").permitAll()
+                    .requestMatchers("/api/favorite/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
