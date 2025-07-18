@@ -12,6 +12,9 @@ import com.norsys.knowvault.service.BookService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,15 +26,24 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final ShelfRepository shelfRepository;
-    @Override
-    public BookDTO create(BookDTO dto) {
 
+    @Override
+    public BookDTO create(BookDTO dto, Authentication authentication) {
         Shelf shelf = shelfRepository.findById(dto.getShelfId())
                 .orElseThrow(() -> new RuntimeException("Etagère introuvable"));
 
+
+        // Cast Authentication to access JWT claims
+        JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) authentication;
+        Jwt jwt = (Jwt) jwtAuth.getToken();
+
+        // Essayez de récupérer "preferred_username" ou "name"
+        String username = jwt.getClaim("preferred_username");
+        // ou String fullName = jwt.getClaim("name");
+
         Book book = Book.builder()
                 .bookTitle(dto.getBookTitle())
-                .utilisateurId(dto.getUtilisateurId())
+                .utilisateurLogin(username)
                 .shelf(shelf)
                 .build();
 
@@ -66,7 +78,9 @@ public class BookServiceImpl implements BookService {
 
         if (dto.getBookTitle() != null) livre.setBookTitle(dto.getBookTitle());
 
-        if (dto.getUtilisateurId() != null) livre.setUtilisateurId(dto.getUtilisateurId());
+        if (dto.getUtilisateurLogin() != null) {
+            livre.setUtilisateurLogin(dto.getUtilisateurLogin());
+        }
 
         if (dto.getShelfId() != null) {
             Shelf e = shelfRepository.findById(dto.getShelfId())

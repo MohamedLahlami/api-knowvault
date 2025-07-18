@@ -1,5 +1,6 @@
 package com.norsys.knowvault.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.norsys.knowvault.model.Book;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 public class BookDTO {
     private Long id;
     private String bookTitle;
-    private UUID utilisateurId;
+    private String utilisateurLogin;
     private Long shelfId;
     private int pageCount;
 
@@ -25,9 +26,11 @@ public class BookDTO {
         BookDTO dto = new BookDTO();
         dto.setId(book.getId());
         dto.setBookTitle(book.getBookTitle());
-        if (book.getUtilisateurId() != null) {
-            dto.setUtilisateurId(book.getUtilisateurId());
+
+        if (book.getUtilisateurLogin() != null) {
+            dto.setUtilisateurLogin(book.getUtilisateurLogin());
         }
+
         if (book.getShelf() != null) {
             dto.setShelfId(book.getShelf().getId());
         }
