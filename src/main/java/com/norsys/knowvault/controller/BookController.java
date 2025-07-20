@@ -5,11 +5,11 @@ import com.norsys.knowvault.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/book")
 @RequiredArgsConstructor
@@ -18,8 +18,8 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping
-    public ResponseEntity<BookDTO> create(@RequestBody BookDTO dto) {
-        BookDTO created = bookService.create(dto);
+    public ResponseEntity<BookDTO> create(@RequestBody BookDTO dto, Authentication authentication) {
+        BookDTO created = bookService.create(dto, authentication);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 

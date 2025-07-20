@@ -19,7 +19,7 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String bookTitle;
-    private UUID utilisateurId;
+    private String utilisateurLogin;
 
     @ManyToOne
     @JoinColumn(name = "shelf_id")
