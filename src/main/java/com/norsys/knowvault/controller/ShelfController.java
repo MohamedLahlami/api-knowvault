@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/shelf")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class ShelfController {
     private final ShelfService shelfService;
