@@ -19,6 +19,8 @@ public class BookDTO {
     private String utilisateurLogin;
     private Long shelfId;
     private int pageCount;
+    private List<ChapterDTO> chapters; //to receive the chapters
+
 
     public static BookDTO toDto(Book book) {
         if (book == null) return null;
@@ -37,6 +39,7 @@ public class BookDTO {
 
         int pageCount = 0;
         if (book.getChapters() != null) {
+            dto.setChapters(ChapterDTO.toDtoList(book.getChapters()));
             for (var chapter : book.getChapters()) {
                 if (chapter.getPages() != null) {
                     pageCount += chapter.getPages().size();
