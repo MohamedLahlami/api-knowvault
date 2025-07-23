@@ -12,6 +12,8 @@ import com.norsys.knowvault.service.BookService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -47,6 +49,7 @@ public class BookServiceImpl implements BookService {
                 .utilisateurLogin(username)
                 .description(dto.getDescription())
                 .createdAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .shelf(shelf)
                 .build();
 
@@ -54,16 +57,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDTO> findAll() {
-        List<Book> books = bookRepository.findAllWithChapters();
+    public Page<BookDTO> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable).map(BookDTO::toDto);
+    }
 
-        for (Book book : books) {
-            for (Chapter chapter : book.getChapters()) {
-                chapter.getPages().size();
-            }
-        }
-
-        return BookDTO.toDtoList(books);
+    @Override
+    public Page<BookDTO> searchByTitle(String bookTitle, Pageable pageable) {
+        return bookRepository.findByBookTitleContainingIgnoreCase(bookTitle, pageable)
+                .map(BookDTO::toDto);
     }
 
     @Override
@@ -90,6 +91,7 @@ public class BookServiceImpl implements BookService {
                     .orElseThrow(() -> new RuntimeException("Etagère introuvable"));
             livre.setShelf(e);
         }
+        if (dto.getDescription() != null) livre.setDescription(dto.getDescription());
         livre.setUpdatedAt(LocalDateTime.now());
         return BookDTO.toDto(bookRepository.save(livre));
     }
