@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -44,6 +45,8 @@ public class BookServiceImpl implements BookService {
         Book book = Book.builder()
                 .bookTitle(dto.getBookTitle())
                 .utilisateurLogin(username)
+                .description(dto.getDescription())
+                .createdAt(LocalDateTime.now())
                 .shelf(shelf)
                 .build();
 
@@ -87,7 +90,7 @@ public class BookServiceImpl implements BookService {
                     .orElseThrow(() -> new RuntimeException("Etagère introuvable"));
             livre.setShelf(e);
         }
-
+        livre.setUpdatedAt(LocalDateTime.now());
         return BookDTO.toDto(bookRepository.save(livre));
     }
 

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -19,6 +20,9 @@ public class BookDTO {
     private String utilisateurLogin;
     private Long shelfId;
     private int pageCount;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private String description;
     private List<ChapterDTO> chapters; //to receive the chapters
 
 
@@ -48,6 +52,9 @@ public class BookDTO {
         }
 
         dto.setPageCount(pageCount);
+        dto.setCreatedAt(book.getCreatedAt());
+        dto.setUpdatedAt(book.getUpdatedAt());
+        dto.setDescription(book.getDescription());
         return dto;
     }
 
