@@ -7,8 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/book")
@@ -23,10 +24,19 @@ public class BookController {
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
+
     @GetMapping
-    public ResponseEntity<List<BookDTO>> findAll() {
-        List<BookDTO> livres = bookService.findAll();
+    public ResponseEntity<Page<BookDTO>> findAll(Pageable pageable) {
+        Page<BookDTO> livres = bookService.findAll(pageable);
         return ResponseEntity.ok(livres);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<BookDTO>> searchBooks(
+            @RequestParam("q") String query,
+            Pageable pageable) {
+        Page<BookDTO> result = bookService.searchByTitle(query, pageable);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
