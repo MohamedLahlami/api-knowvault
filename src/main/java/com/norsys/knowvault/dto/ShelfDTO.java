@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,9 @@ public class ShelfDTO {
     private String label;
     private String description;
     private Tag tag;
+    private int bookCount;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 
     public static ShelfDTO toDto(Shelf e) {
         if (e == null) return null;
@@ -26,6 +30,14 @@ public class ShelfDTO {
         dto.setLabel(e.getLabel());
         dto.setDescription(e.getDescription());
         dto.setTag(e.getTag());
+        dto.setCreatedAt(e.getCreatedAt());
+        dto.setUpdatedAt(e.getUpdatedAt());
+
+        if (e.getBooks() != null) {
+            dto.setBookCount(e.getBooks().size());
+        } else {
+            dto.setBookCount(0);
+        }
 
         return dto;
     }
