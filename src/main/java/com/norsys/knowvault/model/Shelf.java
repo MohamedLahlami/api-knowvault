@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Entity
@@ -21,6 +22,8 @@ public class Shelf {
 
     private String label;
     private String description;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
     private Tag tag;
