@@ -10,6 +10,10 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(
+        name = "chapter",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"book_id", "chapter_title"})
+)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

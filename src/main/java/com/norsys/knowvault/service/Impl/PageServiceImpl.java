@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service@RequiredArgsConstructor
 public class PageServiceImpl implements PageService {
@@ -78,6 +79,12 @@ public class PageServiceImpl implements PageService {
             throw new RuntimeException("Page introuvable avec ID = " + id);
         }
         pageRepository.deleteById(id);
+    }
+
+    @Override
+    public List<PageDTO> findByChapterId(Long chapterId) {
+        List<Page> pages = pageRepository.findByChapterId(chapterId);
+        return PageDTO.toDtoList(pages);
     }
 
 }

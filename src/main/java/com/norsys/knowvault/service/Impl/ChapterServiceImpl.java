@@ -1,12 +1,14 @@
 package com.norsys.knowvault.service.Impl;
 
 import com.norsys.knowvault.dto.ChapterDTO;
+import com.norsys.knowvault.exception.DuplicateChapterException;
 import com.norsys.knowvault.model.Book;
 import com.norsys.knowvault.model.Chapter;
 import com.norsys.knowvault.repository.BookRepository;
 import com.norsys.knowvault.repository.ChapterRepository;
 import com.norsys.knowvault.service.ChapterService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,11 @@ public class ChapterServiceImpl implements ChapterService {
     public ChapterDTO create(ChapterDTO dto) {
         Book book = bookRepository.findById(dto.getBookId())
                 .orElseThrow(() -> new RuntimeException("Livre introuvable avec ID = " + dto.getBookId()));
+
+        boolean exists = chapterRepository.existsByChapterTitleAndBook(dto.getChapterTitle(), book);
+        if (exists) {
+            throw new DuplicateChapterException("Un chapitre avec ce nom existe déjà pour ce livre.");
+        }
 
         Chapter chapter = new Chapter();
         chapter.setChapterTitle(dto.getChapterTitle());
