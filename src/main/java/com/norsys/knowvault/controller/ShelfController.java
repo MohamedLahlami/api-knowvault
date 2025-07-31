@@ -40,7 +40,7 @@ public class ShelfController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ShelfDTO> findById(@PathVariable Long id) {
-        ShelfDTO etagere = shelfService.findById(id);
+        ShelfDTO etagere = shelfService.findByIdWithTags(id);
         return ResponseEntity.ok(etagere);
     }
 
@@ -55,5 +55,6 @@ public class ShelfController {
         shelfService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
 
 }
