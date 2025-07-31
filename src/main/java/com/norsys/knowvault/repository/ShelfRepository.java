@@ -5,10 +5,15 @@ import com.norsys.knowvault.model.Utilisateur;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface ShelfRepository extends JpaRepository<Shelf, Long> {
+
+    @Query("SELECT s FROM Shelf s ORDER BY size(s.books) DESC")
+    List<Shelf> findTop3ByBookCountDesc(Pageable pageable);
 }
