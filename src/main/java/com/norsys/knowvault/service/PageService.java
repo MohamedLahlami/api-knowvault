@@ -10,5 +10,7 @@ public interface PageService {
     PageDTO findById(Long id);
     PageDTO update(Long id, PageDTO dto);
     void delete(Long id);
+
+    List<PageDTO> findByChapterId(Long chapterId);
 }
 

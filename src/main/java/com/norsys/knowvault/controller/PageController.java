@@ -47,4 +47,10 @@ public class PageController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/chapter/{chapterId}")
+    public ResponseEntity<List<PageDTO>> getPagesByChapter(@PathVariable Long chapterId) {
+        List<PageDTO> pages = pageService.findByChapterId(chapterId);
+        return ResponseEntity.ok(pages);
+    }
+
 }
