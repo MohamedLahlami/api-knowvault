@@ -24,6 +24,7 @@ public class BookDTO {
     private LocalDateTime updatedAt;
     private String description;
     private List<ChapterDTO> chapters; //to receive the chapters
+    private List<TagDTO> tags;
 
 
     public static BookDTO toDto(Book book) {
@@ -62,5 +63,11 @@ public class BookDTO {
         return books.stream()
                 .map(BookDTO::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public static BookDTO toDto(Book book, List<TagDTO> tags) {
+        BookDTO dto = toDto(book);
+        dto.setTags(tags);
+        return dto;
     }
 }

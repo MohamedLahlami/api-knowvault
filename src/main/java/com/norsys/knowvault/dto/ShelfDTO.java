@@ -1,6 +1,5 @@
 package com.norsys.knowvault.dto;
 
-import com.norsys.knowvault.enumerator.Tag;
 import com.norsys.knowvault.model.Shelf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,11 +16,12 @@ public class ShelfDTO {
     private Long id;
     private String label;
     private String description;
-    private Tag tag;
     private int bookCount;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private List<TagDTO> tags;
 
+    // Méthode de base (sans tags)
     public static ShelfDTO toDto(Shelf e) {
         if (e == null) return null;
 
@@ -29,16 +29,16 @@ public class ShelfDTO {
         dto.setId(e.getId());
         dto.setLabel(e.getLabel());
         dto.setDescription(e.getDescription());
-        dto.setTag(e.getTag());
         dto.setCreatedAt(e.getCreatedAt());
         dto.setUpdatedAt(e.getUpdatedAt());
+        dto.setBookCount(e.getBooks() != null ? e.getBooks().size() : 0);
+        return dto;
+    }
 
-        if (e.getBooks() != null) {
-            dto.setBookCount(e.getBooks().size());
-        } else {
-            dto.setBookCount(0);
-        }
 
+    public static ShelfDTO toDto(Shelf shelf, List<TagDTO> tags) {
+        ShelfDTO dto = toDto(shelf);
+        dto.setTags(tags);
         return dto;
     }
 
