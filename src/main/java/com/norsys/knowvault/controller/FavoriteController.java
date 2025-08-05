@@ -8,9 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/favorie")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class FavoriteController {
 
@@ -45,5 +47,12 @@ public class FavoriteController {
         favoriteService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<FavoriteDTO>> findByUserId(@PathVariable UUID userId) {
+        List<FavoriteDTO> favoris = favoriteService.findByUserId(userId);
+        return ResponseEntity.ok(favoris);
+    }
+
 
 }

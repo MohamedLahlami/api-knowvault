@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,6 @@ public class FavoriteServiceImpl implements FavoriteService {
     private final FavoriteRepository favoriteRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final PageRepository pageRepository;
-
     @Override
     public FavoriteDTO create(FavoriteDTO dto) {
         Utilisateur utilisateur = utilisateurRepository.findById(dto.getUserId())
@@ -74,5 +74,14 @@ public class FavoriteServiceImpl implements FavoriteService {
         }
         favoriteRepository.deleteById(id);
     }
+
+@Override
+    public List<FavoriteDTO> findByUserId(UUID userId) {
+        return favoriteRepository.findByUserId(userId)
+                .stream()
+                .map(FavoriteDTO::toDto)
+                .toList();
+    }
+
 
 }
