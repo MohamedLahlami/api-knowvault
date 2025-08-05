@@ -47,4 +47,11 @@ public class ChapterController {
         return ResponseEntity.noContent().build();
     }
 
+
+    @GetMapping("/book/{bookId}/chapters")
+    public List<ChapterDTO> getChaptersByBook(@PathVariable Long bookId) {
+        return chapterService.findByBookId(bookId);
+    }
+
+
 }

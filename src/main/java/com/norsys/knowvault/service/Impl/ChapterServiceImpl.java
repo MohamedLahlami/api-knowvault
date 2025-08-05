@@ -8,7 +8,6 @@ import com.norsys.knowvault.repository.BookRepository;
 import com.norsys.knowvault.repository.ChapterRepository;
 import com.norsys.knowvault.service.ChapterService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -76,4 +75,18 @@ public class ChapterServiceImpl implements ChapterService {
         }
         chapterRepository.deleteById(id);
     }
+@Override
+      public List<ChapterDTO> findByBookId(Long bookId) {
+        return chapterRepository.findByBookId(bookId)
+                .stream()
+                .map(chapter -> {
+                    ChapterDTO dto = new ChapterDTO();
+                    dto.setId(chapter.getId());
+                    dto.setChapterTitle(chapter.getChapterTitle());
+                    dto.setBookId(chapter.getBook().getId()); // only if Book is not null
+                    return dto;
+                })
+                .toList();
+    }
+
 }
