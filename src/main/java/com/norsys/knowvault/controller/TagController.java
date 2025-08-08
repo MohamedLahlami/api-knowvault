@@ -3,6 +3,7 @@ package com.norsys.knowvault.controller;
 import com.norsys.knowvault.dto.TagDTO;
 import com.norsys.knowvault.service.TagService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,44 +11,51 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tags")
+@RequestMapping("/api/tag")
 @RequiredArgsConstructor
 public class TagController {
 
     private final TagService tagService;
 
-    // GET Tags by Book ID
-    @GetMapping("/book/{bookId}")
-    public ResponseEntity<List<TagDTO>> getTagsByBook(@PathVariable Long bookId) {
-        List<TagDTO> tags = tagService.getTagsByBookId(bookId);
-        return ResponseEntity.ok(tags);
-    }
-
-    // GET Tags by Shelf ID
-    @GetMapping("/shelf/{shelfId}")
-    public ResponseEntity<List<TagDTO>> getTagsByShelf(@PathVariable Long shelfId) {
-        List<TagDTO> tags = tagService.getTagsByShelfId(shelfId);
-        return ResponseEntity.ok(tags);
-    }
-
-    // CREATE a new Tag
     @PostMapping
-    public ResponseEntity<TagDTO> createTag(@RequestBody TagDTO tagDTO) {
-        TagDTO createdTag = tagService.createTag(tagDTO);
-        return new ResponseEntity<>(createdTag, HttpStatus.CREATED);
+    public ResponseEntity<TagDTO> create(@RequestBody TagDTO dto) {
+        TagDTO created = tagService.create(dto);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    // UPDATE an existing Tag
+    @GetMapping
+    public ResponseEntity<List<TagDTO>> findAll() {
+        List<TagDTO> tags = tagService.findAll();
+        return ResponseEntity.ok(tags);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TagDTO> findById(@PathVariable Long id) {
+        TagDTO tag = tagService.findById(id);
+        return ResponseEntity.ok(tag);
+    }
+
+    @GetMapping("/books")
+    public ResponseEntity<List<TagDTO>> findBookTags() {
+        List<TagDTO> tags = tagService.findByTypeBook();
+        return ResponseEntity.ok(tags);
+    }
+
+    @GetMapping("/shelves")
+    public ResponseEntity<List<TagDTO>> findShelfTags() {
+        List<TagDTO> tags = tagService.findByTypeShelf();
+        return ResponseEntity.ok(tags);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<TagDTO> updateTag(@PathVariable Long id, @RequestBody TagDTO tagDTO) {
-        TagDTO updatedTag = tagService.updateTag(id, tagDTO);
-        return ResponseEntity.ok(updatedTag);
+    public ResponseEntity<TagDTO> update(@PathVariable Long id, @RequestBody TagDTO dto) {
+        TagDTO updated = tagService.update(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
-    // DELETE a Tag by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
-        tagService.deleteTag(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        tagService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

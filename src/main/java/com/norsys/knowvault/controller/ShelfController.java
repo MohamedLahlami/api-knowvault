@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/shelf")
-@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class ShelfController {
     private final ShelfService shelfService;
@@ -22,12 +21,6 @@ public class ShelfController {
     public ResponseEntity<ShelfDTO> create(@RequestBody ShelfDTO dto) {
         ShelfDTO created = shelfService.create(dto);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ShelfDTO>> findAll() {
-        List<ShelfDTO> etageres = shelfService.findAll();
-        return ResponseEntity.ok(etageres);
     }
 
     @GetMapping("/paginated")
@@ -40,9 +33,10 @@ public class ShelfController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ShelfDTO> findById(@PathVariable Long id) {
-        ShelfDTO etagere = shelfService.findByIdWithTags(id);
+        ShelfDTO etagere = shelfService.findById(id);
         return ResponseEntity.ok(etagere);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<ShelfDTO> update(@PathVariable Long id, @RequestBody ShelfDTO dto) {

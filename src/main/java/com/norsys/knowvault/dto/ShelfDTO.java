@@ -19,9 +19,8 @@ public class ShelfDTO {
     private int bookCount;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
-    private List<TagDTO> tags;
+    private TagDTO tag;
 
-    // Méthode de base (sans tags)
     public static ShelfDTO toDto(Shelf e) {
         if (e == null) return null;
 
@@ -32,13 +31,11 @@ public class ShelfDTO {
         dto.setCreatedAt(e.getCreatedAt());
         dto.setUpdatedAt(e.getUpdatedAt());
         dto.setBookCount(e.getBooks() != null ? e.getBooks().size() : 0);
-        return dto;
-    }
 
+        if (e.getTag() != null) {
+            dto.setTag(TagDTO.toDto(e.getTag()));
+        }
 
-    public static ShelfDTO toDto(Shelf shelf, List<TagDTO> tags) {
-        ShelfDTO dto = toDto(shelf);
-        dto.setTags(tags);
         return dto;
     }
 

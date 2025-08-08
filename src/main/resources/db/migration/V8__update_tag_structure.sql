@@ -1,0 +1,10 @@
+ALTER TABLE tag DROP COLUMN IF EXISTS resource_id;
+
+ALTER TABLE book ADD COLUMN tag_id BIGINT;
+ALTER TABLE shelf ADD COLUMN tag_id BIGINT;
+
+ALTER TABLE book
+    ADD CONSTRAINT fk_book_tag FOREIGN KEY (tag_id) REFERENCES tag(id);
+
+ALTER TABLE shelf
+    ADD CONSTRAINT fk_shelf_tag FOREIGN KEY (tag_id) REFERENCES tag(id);

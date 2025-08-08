@@ -12,6 +12,5 @@ public interface BookService {
     Page<BookDTO> searchByTitle(String bookTitle, Pageable pageable);
     BookDTO update(Long id, BookDTO dto);
     void delete(Long id);
-    BookDTO findByIdWithTags(Long id);
 }
 

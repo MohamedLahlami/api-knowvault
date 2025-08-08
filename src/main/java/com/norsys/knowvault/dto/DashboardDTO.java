@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class DashboardDTO {
     private long totalShelves;
@@ -17,17 +16,20 @@ public class DashboardDTO {
     private long totalPages;
     private List<BookDTO> recentBooks;
     private List<ShelfDTO> topShelves;
+    private List<TagDTO> shelfTagStats;
+    private List<TagDTO> bookTagStats;
 
-    public static DashboardDTO toDto(long totalShelves, long totalBooks, long totalPages,
-                                     List<Book> recentBookEntities, List<Shelf> topShelfEntities) {
-        DashboardDTO dto = new DashboardDTO();
-        dto.setTotalShelves(totalShelves);
-        dto.setTotalBooks(totalBooks);
-        dto.setTotalPages(totalPages);
-
-        dto.setRecentBooks(BookDTO.toDtoList(recentBookEntities));
-        dto.setTopShelves(ShelfDTO.toDtoList(topShelfEntities));
-
-        return dto;
+    public DashboardDTO(long totalShelves, long totalBooks, long totalPages,
+                        List<BookDTO> recentBooks, List<ShelfDTO> topShelves,
+                        List<TagDTO> shelfTagStats, List<TagDTO> bookTagStats) {
+        this.totalShelves = totalShelves;
+        this.totalBooks = totalBooks;
+        this.totalPages = totalPages;
+        this.recentBooks = recentBooks;
+        this.topShelves = topShelves;
+        this.shelfTagStats = shelfTagStats;
+        this.bookTagStats = bookTagStats;
     }
+
 }
+

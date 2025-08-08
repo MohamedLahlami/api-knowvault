@@ -26,4 +26,8 @@ public class Shelf {
 
     @OneToMany(mappedBy = "shelf", cascade = CascadeType.ALL)
     private List<Book> books;
+
+    @ManyToOne
+    @JoinColumn(name = "tag_id")
+    private Tag tag;
 }

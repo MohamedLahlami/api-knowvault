@@ -4,9 +4,11 @@ import com.norsys.knowvault.dto.TagDTO;
 
 import java.util.List;
 public interface TagService {
-    List<TagDTO> getTagsByBookId(Long bookId);
-    List<TagDTO> getTagsByShelfId(Long shelfId);
-    TagDTO createTag(TagDTO tagDTO);
-    TagDTO updateTag(Long id, TagDTO tagDTO);
-    void deleteTag(Long id);
+    TagDTO create(TagDTO tagDTO);
+    TagDTO update(Long id, TagDTO tagDTO);
+    void delete(Long id);
+    List<TagDTO> findAll();
+    TagDTO findById(Long id);
+    List<TagDTO> findByTypeBook();
+    List<TagDTO> findByTypeShelf();
 }

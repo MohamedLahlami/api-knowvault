@@ -3,6 +3,7 @@ package com.norsys.knowvault.service.Impl;
 import com.norsys.knowvault.dto.BookDTO;
 import com.norsys.knowvault.dto.DashboardDTO;
 import com.norsys.knowvault.dto.ShelfDTO;
+import com.norsys.knowvault.dto.TagDTO;
 import com.norsys.knowvault.repository.BookRepository;
 import com.norsys.knowvault.repository.PageRepository;
 import com.norsys.knowvault.repository.ShelfRepository;
@@ -33,6 +34,10 @@ public class StatisticsServiceImpl implements StatisticsService {
         List<ShelfDTO> topShelves = ShelfDTO.toDtoList(
                 shelfRepository.findTop3ByBookCountDesc(PageRequest.of(0, 3)));
 
-        return new DashboardDTO(totalShelves, totalBooks, totalPages, recentBooks, topShelves);
+        List<TagDTO> shelfTagStats = shelfRepository.countShelvesByTag();
+        List<TagDTO> bookTagStats = bookRepository.countBooksByTag();
+
+        return new DashboardDTO(totalShelves, totalBooks, totalPages,
+                recentBooks, topShelves, shelfTagStats, bookTagStats);
     }
 }

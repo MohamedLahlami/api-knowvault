@@ -1,5 +1,6 @@
 package com.norsys.knowvault.repository;
 
+import com.norsys.knowvault.dto.TagDTO;
 import com.norsys.knowvault.model.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,4 +21,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Page<Book> findAll(Pageable pageable);
 
     List<Book> findTop3ByOrderByUpdatedAtDesc();
+
+    @Query("SELECT new com.norsys.knowvault.dto.TagDTO(t.id, t.label, t.type, COUNT(b)) " +
+            "FROM Book b JOIN b.tag t GROUP BY t.id, t.label, t.type")
+    List<TagDTO> countBooksByTag();
 }

@@ -1,7 +1,6 @@
 package com.norsys.knowvault.service;
 
 import com.norsys.knowvault.dto.ShelfDTO;
-import com.norsys.knowvault.enumerator.Tag;
 import com.norsys.knowvault.model.Shelf;
 import com.norsys.knowvault.repository.ShelfRepository;
 import com.norsys.knowvault.service.Impl.ShelfServiceImpl;

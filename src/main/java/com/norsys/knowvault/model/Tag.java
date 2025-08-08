@@ -4,6 +4,8 @@ import com.norsys.knowvault.enumerator.TagType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 
 @Entity
 @Data
@@ -13,7 +15,6 @@ import lombok.*;
 @Getter
 @Setter
 public class Tag {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +22,12 @@ public class Tag {
     private String label;
 
     @Enumerated(EnumType.STRING)
-    private TagType type; // BOOK or SHELF
+    private TagType type;
 
-    private Long resourceId; // Book or shelf ID
+
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL)
+    private List<Book> books;
+
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL)
+    private List<Shelf> shelves;
 }
