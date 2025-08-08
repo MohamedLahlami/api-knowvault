@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface FavoriteService {
-    FavoriteDTO create(FavoriteDTO dto);
-    List<FavoriteDTO> findAll();
-    FavoriteDTO findById(Long id);
-    FavoriteDTO update(Long id, FavoriteDTO dto);
-    void delete(Long id);
-    public List<FavoriteDTO> findByUserId(UUID userId);
+
+    List<FavoriteDTO> getFavoritesByUser();
+   List<FavoriteDTO> OnlyFavoritesForUser();
+    void deleteFavoriteById(Long id);
+    FavoriteDTO toggleFavorite(Long pageId);
 }

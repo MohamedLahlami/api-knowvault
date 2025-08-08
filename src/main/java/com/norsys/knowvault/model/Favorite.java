@@ -23,4 +23,5 @@ public class Favorite {
     @ManyToOne
     @JoinColumn(name = "page_id")
     private Page page;
+
 }

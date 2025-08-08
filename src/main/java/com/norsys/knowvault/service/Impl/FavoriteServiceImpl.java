@@ -1,18 +1,22 @@
 package com.norsys.knowvault.service.Impl;
 
 import com.norsys.knowvault.dto.FavoriteDTO;
-import com.norsys.knowvault.model.Favorite;
-import com.norsys.knowvault.model.Page;
-import com.norsys.knowvault.model.Utilisateur;
+import com.norsys.knowvault.exception.FavoriteNotFoundException;
+import com.norsys.knowvault.model.*;
 import com.norsys.knowvault.repository.FavoriteRepository;
 import com.norsys.knowvault.repository.PageRepository;
 import com.norsys.knowvault.repository.UtilisateurRepository;
 import com.norsys.knowvault.service.FavoriteService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,67 +25,91 @@ public class FavoriteServiceImpl implements FavoriteService {
     private final FavoriteRepository favoriteRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final PageRepository pageRepository;
-    @Override
-    public FavoriteDTO create(FavoriteDTO dto) {
-        Utilisateur utilisateur = utilisateurRepository.findById(dto.getUserId())
+
+    private UUID getCurrentUserId() {
+        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return UUID.fromString(jwt.getClaimAsString("sub"));
+    }
+
+    private Utilisateur getCurrentUser() {
+        return utilisateurRepository.findById(getCurrentUserId())
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-        Page page = pageRepository.findById(dto.getPageId())
-                .orElseThrow(() -> new RuntimeException("Page introuvable"));
-
-        Favorite favorite = Favorite.builder()
-                .user(utilisateur)
-                .page(page)
-                .build();
-
-        return FavoriteDTO.toDto(favoriteRepository.save(favorite));
     }
 
     @Override
-    public List<FavoriteDTO> findAll() {
-        return FavoriteDTO.toDtoList(favoriteRepository.findAll());
-    }
-
-    @Override
-    public FavoriteDTO findById(Long id) {
-        return FavoriteDTO.toDto(favoriteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Favoris introuvable")));
-    }
-
-    @Override
-    public FavoriteDTO update(Long id, FavoriteDTO dto) {
-        Favorite favorite = favoriteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Favoris introuvable"));
-
-        if (dto.getUserId() != null) {
-            Utilisateur u = utilisateurRepository.findById(dto.getUserId())
-                    .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-            favorite.setUser(u);
-        }
-
-        if (dto.getPageId() != null) {
-            Page p = pageRepository.findById(dto.getPageId())
-                    .orElseThrow(() -> new RuntimeException("Page introuvable"));
-            favorite.setPage(p);
-        }
-
-        return FavoriteDTO.toDto(favoriteRepository.save(favorite));
-    }
-
-    @Override
-    public void delete(Long id) {
+    @Transactional
+    public void deleteFavoriteById(Long id) {
         if (!favoriteRepository.existsById(id)) {
-            throw new RuntimeException("Favoris introuvable");
+            throw new FavoriteNotFoundException("Favori non trouvé avec id: " + id);
         }
         favoriteRepository.deleteById(id);
     }
 
-@Override
-    public List<FavoriteDTO> findByUserId(UUID userId) {
-        return favoriteRepository.findByUserId(userId)
+    @Override
+    public List<FavoriteDTO> getFavoritesByUser() {
+        Utilisateur user = getCurrentUser();
+        return favoriteRepository.findByUser(user)
                 .stream()
-                .map(FavoriteDTO::toDto)
-                .toList();
+                .map(fav -> {
+                    FavoriteDTO dto = new FavoriteDTO();
+                    dto.setId(fav.getId());
+                    dto.setUserId(user.getId());
+                    dto.setPageId(fav.getPage().getId());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
+
+    @Override
+    @Transactional
+    public FavoriteDTO toggleFavorite(Long pageId) {
+        Utilisateur user = getCurrentUser();
+        Page page = pageRepository.findById(pageId)
+                .orElseThrow(() -> new RuntimeException("Page introuvable"));
+
+        Optional<Favorite> existing = favoriteRepository.findByUserAndPage(user, page);
+        if (existing.isPresent()) {
+            favoriteRepository.delete(existing.get());
+            return null;
+        } else {
+            Favorite fav = Favorite.builder()
+                    .user(user)
+                    .page(page)
+                    .build();
+            Favorite saved = favoriteRepository.save(fav);
+            FavoriteDTO dto = new FavoriteDTO();
+            dto.setId(saved.getId());
+            dto.setUserId(user.getId());
+            dto.setPageId(page.getId());
+            dto.setPageNumber(page.getPageNumber());
+            dto.setChapterTitle(page.getChapter().getChapterTitle());
+            dto.setBookTitle(page.getChapter().getBook().getBookTitle());
+            return dto;
+        }
+    }
+
+    @Override
+    public List<FavoriteDTO> OnlyFavoritesForUser() {
+        Utilisateur user = getCurrentUser();
+
+        return favoriteRepository.findByUser(user)
+                .stream()
+                .map(fav -> {
+                    Page page = fav.getPage();
+                    Chapter chapter = page.getChapter();
+                    Book book = chapter.getBook();
+
+                    FavoriteDTO dto = new FavoriteDTO();
+                    dto.setId(fav.getId());
+                    dto.setUserId(user.getId());
+                    dto.setPageId(page.getId());
+                    dto.setPageNumber(page.getPageNumber());
+                    dto.setChapterTitle(chapter.getChapterTitle());
+                    dto.setBookTitle(book.getBookTitle());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 
 }
