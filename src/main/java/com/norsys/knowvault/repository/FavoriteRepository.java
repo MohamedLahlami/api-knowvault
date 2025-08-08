@@ -1,15 +1,14 @@
 package com.norsys.knowvault.repository;
 
 import com.norsys.knowvault.model.Favorite;
+import com.norsys.knowvault.model.Page;
+import com.norsys.knowvault.model.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
-@Repository
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
-    List<Favorite> findByUserId(UUID userId);
-
-
+    List<Favorite> findByUser(Utilisateur user);
+    Optional<Favorite> findByUserAndPage(Utilisateur user, Page page);
 }

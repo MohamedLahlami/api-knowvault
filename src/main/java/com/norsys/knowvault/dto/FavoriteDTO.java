@@ -12,6 +12,10 @@ public class FavoriteDTO {
     private Long id;
     private UUID userId;
     private Long pageId;
+    private Integer pageNumber;
+    private String chapterTitle;
+    private String bookTitle;
+
 
     public static FavoriteDTO toDto(Favorite f) {
         if (f == null) return null;
@@ -30,4 +34,5 @@ public class FavoriteDTO {
     public static List<FavoriteDTO> toDtoList(List<Favorite> list) {
         return list.stream().map(FavoriteDTO::toDto).collect(Collectors.toList());
     }
+
 }

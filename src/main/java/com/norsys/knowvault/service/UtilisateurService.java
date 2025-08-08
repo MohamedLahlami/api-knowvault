@@ -11,5 +11,4 @@ public interface UtilisateurService {
     UtilisateurDTO getUtilisateurByLogin(String login);
     public Utilisateur ensureUserExistsFromJwt(Jwt jwt) ;
 
-
 }

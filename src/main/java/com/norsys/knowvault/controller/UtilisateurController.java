@@ -3,15 +3,13 @@ package com.norsys.knowvault.controller;
 import com.norsys.knowvault.dto.UtilisateurDTO;
 import com.norsys.knowvault.service.UtilisateurService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/utilisateurs")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class UtilisateurController {
 
