@@ -32,4 +32,8 @@ public class Book {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<Chapter> chapters;
 
+    @ManyToOne
+    @JoinColumn(name = "tag_id")
+    private Tag tag;
+
 }

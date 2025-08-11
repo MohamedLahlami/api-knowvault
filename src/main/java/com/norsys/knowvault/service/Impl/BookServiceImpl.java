@@ -26,9 +26,7 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
-    private final UtilisateurRepository utilisateurRepository;
     private final ShelfRepository shelfRepository;
-    private final TagService tagService;
 
     @Override
     public BookDTO create(BookDTO dto, Authentication authentication) {
@@ -49,55 +47,26 @@ public class BookServiceImpl implements BookService {
                 .build();
 
         Book savedBook = bookRepository.save(book);
-
-
-        if (dto.getTags() != null) {
-            for (TagDTO tagDTO : dto.getTags()) {
-                tagDTO.setResourceId(savedBook.getId());
-                tagDTO.setType(TagType.BOOK);
-                tagService.createTag(tagDTO);
-            }
-        }
-
-
-        List<TagDTO> tags = tagService.getTagsByBookId(savedBook.getId());
-        return BookDTO.toDto(savedBook, tags);
+        return BookDTO.toDto(savedBook);
     }
 
     @Override
     public Page<BookDTO> findAll(Pageable pageable) {
         Page<Book> booksPage = bookRepository.findAll(pageable);
-        return booksPage.map(book -> {
-            List<TagDTO> tags = tagService.getTagsByBookId(book.getId());
-            return BookDTO.toDto(book, tags);
-        });
+        return booksPage.map(BookDTO::toDto);
     }
 
     @Override
     public Page<BookDTO> searchByTitle(String bookTitle, Pageable pageable) {
         Page<Book> booksPage = bookRepository.findByBookTitleContainingIgnoreCase(bookTitle, pageable);
-        return booksPage.map(book -> {
-            List<TagDTO> tags = tagService.getTagsByBookId(book.getId());
-            return BookDTO.toDto(book, tags);
-        });
+        return booksPage.map(BookDTO::toDto);
     }
 
     @Override
     public BookDTO findById(Long id) {
-        return BookDTO.toDto(
-                bookRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Livre introuvable"))
-        );
-    }
-
-    @Override
-    public BookDTO findByIdWithTags(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Livre introuvable"));
-
-        BookDTO dto = BookDTO.toDto(book);
-        dto.setTags(tagService.getTagsByBookId(id));
-        return dto;
+        return BookDTO.toDto(book);
     }
 
     @Override
@@ -118,40 +87,14 @@ public class BookServiceImpl implements BookService {
 
         book.setUpdatedAt(LocalDateTime.now());
 
-        // Gestion des tags
-        if (dto.getTags() != null) {
-            // Supprimer les anciens tags liés
-            List<TagDTO> oldTags = tagService.getTagsByBookId(id);
-            for (TagDTO oldTag : oldTags) {
-                tagService.deleteTag(oldTag.getId());
-            }
-
-            // Créer les nouveaux tags
-            for (TagDTO newTag : dto.getTags()) {
-                newTag.setResourceId(id);
-                newTag.setType(TagType.BOOK);
-                tagService.createTag(newTag);
-            }
-        }
-
         Book savedBook = bookRepository.save(book);
-
-        // Recharger les tags après mise à jour
-        List<TagDTO> tags = tagService.getTagsByBookId(id);
-
-        return BookDTO.toDto(savedBook, tags);
+        return BookDTO.toDto(savedBook);
     }
 
     @Override
     public void delete(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new RuntimeException("Livre introuvable");
-        }
-
-        // Supprimer les tags associés avant de supprimer le livre
-        List<TagDTO> tags = tagService.getTagsByBookId(id);
-        for (TagDTO tag : tags) {
-            tagService.deleteTag(tag.getId());
         }
 
         bookRepository.deleteById(id);

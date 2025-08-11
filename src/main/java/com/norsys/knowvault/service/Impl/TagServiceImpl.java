@@ -5,6 +5,7 @@ import com.norsys.knowvault.enumerator.TagType;
 import com.norsys.knowvault.model.Tag;
 import com.norsys.knowvault.repository.TagRepository;
 import com.norsys.knowvault.service.TagService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,60 +19,56 @@ public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
 
     @Override
-    public List<TagDTO> getTagsByBookId(Long bookId) {
-        List<Tag> tags = tagRepository.findByTypeAndResourceId(TagType.BOOK, bookId);
-        return tags.stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+    public TagDTO create(TagDTO tagDTO) {
+        Tag tag = Tag.builder()
+                .label(tagDTO.getLabel())
+                .type(tagDTO.getType())
+                .build();
+
+        Tag saved = tagRepository.save(tag);
+        return TagDTO.toDto(saved);
     }
 
     @Override
-    public List<TagDTO> getTagsByShelfId(Long shelfId) {
-        List<Tag> tags = tagRepository.findByTypeAndResourceId(TagType.SHELF, shelfId);
-        return tags.stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+    public List<TagDTO> findAll() {
+        return TagDTO.toDtoList(tagRepository.findAll());
     }
 
     @Override
-    public TagDTO createTag(TagDTO tagDTO) {
-        Tag tag = new Tag();
+    public TagDTO findById(Long id) {
+        return tagRepository.findById(id)
+                .map(TagDTO::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + id));
+    }
+
+    @Override
+    public List<TagDTO> findByTypeBook() {
+        return TagDTO.toDtoList(tagRepository.findByType(TagType.BOOK));
+    }
+
+    @Override
+    public List<TagDTO> findByTypeShelf() {
+        return TagDTO.toDtoList(tagRepository.findByType(TagType.SHELF));
+    }
+
+    @Override
+    public TagDTO update(Long id, TagDTO tagDTO) {
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + id));
+
         tag.setLabel(tagDTO.getLabel());
         tag.setType(tagDTO.getType());
-        tag.setResourceId(tagDTO.getResourceId());
 
-        tag = tagRepository.save(tag);
-
-        return mapToDTO(tag);
+        Tag updated = tagRepository.save(tag);
+        return TagDTO.toDto(updated);
     }
 
     @Override
-    public TagDTO updateTag(Long id, TagDTO tagDTO) {
-        Tag existingTag = tagRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tag not found with id " + id));
-
-        existingTag.setLabel(tagDTO.getLabel());
-        existingTag.setType(tagDTO.getType());
-        existingTag.setResourceId(tagDTO.getResourceId());
-
-        Tag updatedTag = tagRepository.save(existingTag);
-        return mapToDTO(updatedTag);
-    }
-
-    @Override
-    public void deleteTag(Long id) {
+    public void delete(Long id) {
         if (!tagRepository.existsById(id)) {
-            throw new RuntimeException("Tag not found with id " + id);
+            throw new EntityNotFoundException("Tag not found with id: " + id);
         }
         tagRepository.deleteById(id);
     }
 
-    private TagDTO mapToDTO(Tag tag) {
-        TagDTO dto = new TagDTO();
-        dto.setId(tag.getId());
-        dto.setLabel(tag.getLabel());
-        dto.setType(tag.getType());
-        dto.setResourceId(tag.getResourceId());
-        return dto;
-    }
 }

@@ -12,5 +12,4 @@ public interface ShelfService {
     ShelfDTO update(Long id, ShelfDTO dto);
     Page<ShelfDTO> findAllPaginated(int page, int size);
     void delete(Long id);
-    ShelfDTO findByIdWithTags(Long id);
 }

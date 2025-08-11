@@ -2,40 +2,43 @@ package com.norsys.knowvault.dto;
 
 import com.norsys.knowvault.enumerator.TagType;
 import com.norsys.knowvault.model.Tag;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-@Setter
-@Getter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TagDTO {
 
     private Long id;
     private String label;
     private TagType type;
-    private Long resourceId;
+    private long value;
 
+    public static TagDTO toDto(Tag tag) {
+        if (tag == null) return null;
 
-    public TagDTO() {
+        TagDTO dto = new TagDTO();
+        dto.setId(tag.getId());
+        dto.setLabel(tag.getLabel());
+        dto.setType(tag.getType());
+        dto.setValue(0);
+        return dto;
     }
 
-    public TagDTO(Long id, String label, TagType type, Long resourceId) {
-        this.id = id;
-        this.label = label;
-        this.type = type;
-        this.resourceId = resourceId;
+    public static List<TagDTO> toDtoList(List<Tag> tags) {
+        return tags.stream().map(TagDTO::toDto).collect(Collectors.toList());
     }
 
-    public static List<TagDTO> fromEntityList(Set<Tag> tags) {
-        return tags.stream()
-                .map(tag -> new TagDTO(
-                        tag.getId(),
-                        tag.getLabel(),
-                        tag.getType(),
-                        tag.getResourceId()))
-                .collect(Collectors.toList());
+    public static Tag toEntity(TagDTO dto) {
+        if (dto == null) return null;
+        return Tag.builder()
+                .id(dto.getId())
+                .label(dto.getLabel())
+                .type(dto.getType())
+                .build();
     }
+
 }
