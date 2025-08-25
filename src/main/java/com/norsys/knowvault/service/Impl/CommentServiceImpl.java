@@ -3,71 +3,79 @@ package com.norsys.knowvault.service.Impl;
 import com.norsys.knowvault.dto.CommentDTO;
 import com.norsys.knowvault.model.Comment;
 import com.norsys.knowvault.model.Page;
-import com.norsys.knowvault.model.Utilisateur;
 import com.norsys.knowvault.repository.CommentRepository;
 import com.norsys.knowvault.repository.PageRepository;
-import com.norsys.knowvault.repository.UtilisateurRepository;
 import com.norsys.knowvault.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final UtilisateurRepository utilisateurRepository;
     private final PageRepository pageRepository;
 
     @Override
-    public CommentDTO create(CommentDTO dto) {
-        Utilisateur utilisateur = utilisateurRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+    public CommentDTO create(CommentDTO dto, Authentication authentication) {
         Page page = pageRepository.findById(dto.getPageId())
                 .orElseThrow(() -> new RuntimeException("Page introuvable"));
 
+        JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) authentication;
+        Jwt jwt = (Jwt) jwtAuth.getToken();
+        String username = jwt.getClaim("preferred_username");
+
         Comment comment = Comment.builder()
                 .text(dto.getText())
-                .user(utilisateur)
+                .utilisateurLogin(username)
+                .createdAt(LocalDateTime.now())
                 .page(page)
                 .build();
 
-        return CommentDTO.toDto(commentRepository.save(comment));
+        Comment savedComment = commentRepository.save(comment);
+        return CommentDTO.toDto(savedComment);
     }
 
     @Override
-    public List<CommentDTO> findAll() {
-        return CommentDTO.toDtoList(commentRepository.findAll());
+    public org.springframework.data.domain.Page<CommentDTO> findAll(Pageable pageable) {
+        return commentRepository.findAll(pageable)
+                .map(CommentDTO::toDto);
+    }
+
+    @Override
+    public org.springframework.data.domain.Page<CommentDTO> searchByContent(String query, Pageable pageable) {
+        return commentRepository.findByTextContainingIgnoreCase(query, pageable)
+                .map(CommentDTO::toDto);
     }
 
     @Override
     public CommentDTO findById(Long id) {
-        return CommentDTO.toDto(commentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Commentaire introuvable")));
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Commentaire introuvable"));
+        return CommentDTO.toDto(comment);
     }
 
     @Override
     public CommentDTO update(Long id, CommentDTO dto) {
-        Comment comment = commentRepository.findById(id)
+        Comment existingComment = commentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commentaire introuvable"));
 
-        if (dto.getText() != null) comment.setText(dto.getText());
-
-        if (dto.getUserId() != null) {
-            Utilisateur u = utilisateurRepository.findById(dto.getUserId())
-                    .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-            comment.setUser(u);
-        }
+        existingComment.setText(dto.getText());
 
         if (dto.getPageId() != null) {
-            Page p = pageRepository.findById(dto.getPageId())
+            Page page = pageRepository.findById(dto.getPageId())
                     .orElseThrow(() -> new RuntimeException("Page introuvable"));
-            comment.setPage(p);
+            existingComment.setPage(page);
         }
 
-        return CommentDTO.toDto(commentRepository.save(comment));
+        Comment updatedComment = commentRepository.save(existingComment);
+        return CommentDTO.toDto(updatedComment);
     }
 
     @Override
@@ -77,5 +85,4 @@ public class CommentServiceImpl implements CommentService {
         }
         commentRepository.deleteById(id);
     }
-
 }

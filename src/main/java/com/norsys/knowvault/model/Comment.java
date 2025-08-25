@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @Builder
@@ -16,10 +18,8 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String text;
-
-    @ManyToOne
-    @JoinColumn(name = "utilisateur_id")
-    private Utilisateur user;
+    private LocalDateTime createdAt;
+    private String utilisateurLogin;
 
     @ManyToOne
     @JoinColumn(name = "page_id")
