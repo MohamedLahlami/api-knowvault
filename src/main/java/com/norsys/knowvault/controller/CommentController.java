@@ -5,9 +5,10 @@ import com.norsys.knowvault.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/comment")
@@ -17,15 +18,23 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<CommentDTO> create(@RequestBody CommentDTO dto) {
-        CommentDTO created = commentService.create(dto);
+    public ResponseEntity<CommentDTO> create(@RequestBody CommentDTO dto, Authentication authentication) {
+        CommentDTO created = commentService.create(dto, authentication);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<CommentDTO>> findAll() {
-        List<CommentDTO> commentaires = commentService.findAll();
+    public ResponseEntity<Page<CommentDTO>> findAll(Pageable pageable) {
+        Page<CommentDTO> commentaires = commentService.findAll(pageable);
         return ResponseEntity.ok(commentaires);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<CommentDTO>> searchComments(
+            @RequestParam("q") String query,
+            Pageable pageable) {
+        Page<CommentDTO> result = commentService.searchByContent(query, pageable);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
