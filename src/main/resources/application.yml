@@ -1,6 +1,10 @@
 server:
   port: ${SERVER_PORT:8081}
 
+ai:
+  summarizer:
+    base-url: http://localhost:5001
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
