@@ -7,9 +7,6 @@ ALTER TABLE comment
 ALTER TABLE comment
     ADD utilisateur_login VARCHAR(255);
 
-ALTER TABLE chapter
-    ADD CONSTRAINT uc_373ec2068939fa15cc1e3e1d5 UNIQUE (book_id);
-
 ALTER TABLE comment
     DROP COLUMN utilisateur_id;
 
