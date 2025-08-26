@@ -16,8 +16,7 @@ import java.util.UUID;
 @Repository
 public interface ShelfRepository extends JpaRepository<Shelf, Long> {
 
-    @Query("SELECT s FROM Shelf s ORDER BY size(s.books) DESC")
-    List<Shelf> findTop3ByBookCountDesc(Pageable pageable);
+    List<Shelf> findTop3ByOrderByViewsDesc(Pageable pageable);
 
     @Query("SELECT new com.norsys.knowvault.dto.TagDTO(t.id, t.label, t.type, COUNT(s)) " +
             "FROM Shelf s JOIN s.tag t GROUP BY t.id, t.label, t.type")

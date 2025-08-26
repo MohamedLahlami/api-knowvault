@@ -23,6 +23,8 @@ public class Shelf {
     private String description;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private String imageName;
+    private long views;
 
     @OneToMany(mappedBy = "shelf", cascade = CascadeType.ALL)
     private List<Book> books;

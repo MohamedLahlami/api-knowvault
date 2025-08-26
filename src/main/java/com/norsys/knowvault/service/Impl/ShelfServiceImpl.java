@@ -1,5 +1,6 @@
 package com.norsys.knowvault.service.Impl;
 
+import com.norsys.knowvault.dto.BookDTO;
 import com.norsys.knowvault.dto.ShelfDTO;
 import com.norsys.knowvault.dto.TagDTO;
 import com.norsys.knowvault.enumerator.TagType;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -23,20 +25,22 @@ import java.util.List;
 public class ShelfServiceImpl implements ShelfService {
 
     private final ShelfRepository shelfRepository;
-    private final TagService tagService; // Injection du service Tag
+    private final TagService tagService;
 
     @Override
     public ShelfDTO create(ShelfDTO dto) {
         Shelf shelf = Shelf.builder()
                 .label(dto.getLabel())
                 .description(dto.getDescription())
+                .imageName(dto.getImageName())
+                .views(0)
                 .createdAt(OffsetDateTime.now())
                 .updatedAt(OffsetDateTime.now())
                 .build();
 
         if (dto.getTag() != null && dto.getTag().getId() != null) {
             TagDTO tagDTO = tagService.findById(dto.getTag().getId());
-            Tag tag = TagDTO.toEntity(tagDTO); // ✅ conversion
+            Tag tag = TagDTO.toEntity(tagDTO);
             shelf.setTag(tag);
         }
 
@@ -66,8 +70,8 @@ public class ShelfServiceImpl implements ShelfService {
 
         if (dto.getLabel() != null) shelf.setLabel(dto.getLabel());
         if (dto.getDescription() != null) shelf.setDescription(dto.getDescription());
+        if (dto.getImageName() != null) shelf.setImageName(dto.getImageName());
 
-        // Mise à jour du tag si présent dans le DTO
         if (dto.getTag() != null && dto.getTag().getId() != null) {
             TagDTO tagDTO = tagService.findById(dto.getTag().getId());
             Tag tag = TagDTO.toEntity(tagDTO); // ✅ conversion
@@ -81,8 +85,31 @@ public class ShelfServiceImpl implements ShelfService {
     }
 
     @Override
+    public ShelfDTO incrementViews(Long id) {
+        Shelf shelf = shelfRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Etagère introuvable"));
+        shelf.setViews(shelf.getViews() + 1);
+        Shelf updatedShelf = shelfRepository.save(shelf);
+        return ShelfDTO.toDto(updatedShelf);
+    }
+
+    @Override
+    public List<BookDTO> getBooksByShelfId(Long shelfId) {
+        Shelf shelf = shelfRepository.findById(shelfId)
+                .orElseThrow(() -> new EntityNotFoundException("Étagère introuvable"));
+
+        shelf.setViews(shelf.getViews() + 1);
+        shelfRepository.save(shelf);
+
+        return shelf.getBooks()
+                .stream()
+                .map(BookDTO::toDto)
+                .toList();
+    }
+
+    @Override
     public Page<ShelfDTO> findAllPaginated(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         Page<Shelf> shelfPage = shelfRepository.findAll(pageable);
         return shelfPage.map(ShelfDTO::toDto);
     }
