@@ -32,7 +32,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         );
 
         List<ShelfDTO> topShelves = ShelfDTO.toDtoList(
-                shelfRepository.findTop3ByBookCountDesc(PageRequest.of(0, 3)));
+                shelfRepository.findTop3ByOrderByViewsDesc(PageRequest.of(0, 3)));
 
         List<TagDTO> shelfTagStats = shelfRepository.countShelvesByTag();
         List<TagDTO> bookTagStats = bookRepository.countBooksByTag();

@@ -1,0 +1,5 @@
+ALTER TABLE shelf
+    ADD COLUMN image_name VARCHAR(255);
+
+ALTER TABLE shelf
+    ADD COLUMN views BIGINT NOT NULL DEFAULT 0;

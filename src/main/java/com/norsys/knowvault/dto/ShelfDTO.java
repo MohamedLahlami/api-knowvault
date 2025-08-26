@@ -17,6 +17,9 @@ public class ShelfDTO {
     private String label;
     private String description;
     private int bookCount;
+    private String imageName;
+    private String imageUrl;
+    private long views;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private TagDTO tag;
@@ -28,6 +31,8 @@ public class ShelfDTO {
         dto.setId(e.getId());
         dto.setLabel(e.getLabel());
         dto.setDescription(e.getDescription());
+        dto.setImageName(e.getImageName());
+        dto.setViews(e.getViews());
         dto.setCreatedAt(e.getCreatedAt());
         dto.setUpdatedAt(e.getUpdatedAt());
         dto.setBookCount(e.getBooks() != null ? e.getBooks().size() : 0);
