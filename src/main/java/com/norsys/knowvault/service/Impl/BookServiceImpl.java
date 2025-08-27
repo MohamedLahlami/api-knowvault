@@ -1,6 +1,7 @@
 package com.norsys.knowvault.service.Impl;
 
 import com.norsys.knowvault.dto.BookDTO;
+import com.norsys.knowvault.dto.ShelfDTO;
 import com.norsys.knowvault.dto.TagDTO;
 import com.norsys.knowvault.enumerator.TagType;
 import com.norsys.knowvault.model.Book;
@@ -54,6 +55,14 @@ public class BookServiceImpl implements BookService {
     public Page<BookDTO> findAll(Pageable pageable) {
         Page<Book> booksPage = bookRepository.findAll(pageable);
         return booksPage.map(BookDTO::toDto);
+    }
+
+    @Override
+    public List<BookDTO> findAllBooks() {
+        List<Book> books = bookRepository.findAll();
+        return books.stream()
+                .map(BookDTO::toDto)
+                .toList();
     }
 
     @Override

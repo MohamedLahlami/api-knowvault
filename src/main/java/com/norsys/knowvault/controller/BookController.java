@@ -1,7 +1,9 @@
 package com.norsys.knowvault.controller;
 
 import com.norsys.knowvault.dto.BookDTO;
+import com.norsys.knowvault.dto.ShelfDTO;
 import com.norsys.knowvault.service.BookService;
+import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/book")
@@ -29,6 +33,13 @@ public class BookController {
     public ResponseEntity<Page<BookDTO>> findAll(Pageable pageable) {
         Page<BookDTO> livres = bookService.findAll(pageable);
         return ResponseEntity.ok(livres);
+    }
+
+    @GetMapping("/public")
+    @PermitAll
+    public List<BookDTO> getAllBooksPublic() {
+        List<BookDTO> books = bookService.findAllBooks();
+        return books;
     }
 
     @GetMapping("/search")
