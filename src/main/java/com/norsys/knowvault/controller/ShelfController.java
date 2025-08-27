@@ -6,6 +6,7 @@ import com.norsys.knowvault.dto.ShelfDTO;
 import com.norsys.knowvault.service.Impl.FileStorageService;
 import com.norsys.knowvault.service.ShelfService;
 import com.norsys.knowvault.service.TagService;
+import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -53,8 +54,7 @@ public class ShelfController {
 
     @GetMapping("/paginated")
     public ResponseEntity<Page<ShelfDTO>> getPaginatedShelves(
-            @RequestParam(defaultValue = "0") int page
-    ) {
+            @RequestParam(defaultValue = "0") int page) {
         Page<ShelfDTO> shelfPage = shelfService.findAllPaginated(page, 3);
         return ResponseEntity.ok(shelfPage);
     }
@@ -69,6 +69,13 @@ public class ShelfController {
     public ResponseEntity<List<BookDTO>> getBooksByShelf(@PathVariable Long id) {
         List<BookDTO> books = shelfService.getBooksByShelfId(id);
         return ResponseEntity.ok(books);
+    }
+
+    @GetMapping("/public")
+    @PermitAll
+    public List<ShelfDTO> getAllShelvesPublic() {
+        List<ShelfDTO> etageres = shelfService.findAll();
+        return etageres;
     }
 
 

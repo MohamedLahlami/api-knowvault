@@ -55,7 +55,8 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/api/files/**").permitAll()
+                    .requestMatchers("/api/shelf/**").permitAll()
+                    .requestMatchers("/api/book/public").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
