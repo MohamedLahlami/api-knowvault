@@ -1,5 +1,6 @@
 package com.norsys.knowvault.service.Impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,22 +15,49 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
 @Service
+@Slf4j
 public class FileStorageService {
 
     private final String uploadDir = "uploads/";
 
     public String saveFile(MultipartFile file) throws IOException {
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, fileName);
+        log.info("Starting file upload - original filename: '{}', size: {} bytes",
+                file.getOriginalFilename(), file.getSize());
 
-        Files.createDirectories(filePath.getParent());
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        try {
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir, fileName);
 
-        return fileName;
+            log.debug("Generated filename: '{}', saving to path: {}", fileName, filePath);
+
+            Files.createDirectories(filePath.getParent());
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            log.info("Successfully saved file: '{}' to {}", fileName, filePath);
+            return fileName;
+        } catch (IOException e) {
+            log.error("Failed to save file '{}': {}", file.getOriginalFilename(), e.getMessage(), e);
+            throw e;
+        }
     }
 
     public Resource loadFile(String fileName) throws MalformedURLException {
-        Path filePath = Paths.get(uploadDir).resolve(fileName).normalize();
-        return new UrlResource(filePath.toUri());
+        log.debug("Loading file: '{}'", fileName);
+
+        try {
+            Path filePath = Paths.get(uploadDir).resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists()) {
+                log.debug("Successfully loaded file: '{}'", fileName);
+            } else {
+                log.warn("File not found: '{}'", fileName);
+            }
+
+            return resource;
+        } catch (MalformedURLException e) {
+            log.error("Malformed URL when loading file '{}': {}", fileName, e.getMessage(), e);
+            throw e;
+        }
     }
 }

@@ -19,7 +19,10 @@ public class Page {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private int pageNumber;
+
+    @Lob @Column(columnDefinition = "TEXT")
     private String content;
+    @Lob @Column(columnDefinition = "TEXT")
     private String markdownContent;
 
     @Enumerated(EnumType.STRING)

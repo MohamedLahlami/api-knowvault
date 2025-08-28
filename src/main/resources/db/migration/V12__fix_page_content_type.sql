@@ -1,0 +1,5 @@
+ALTER TABLE page
+    ALTER COLUMN content TYPE TEXT;
+
+ALTER TABLE page
+    ALTER COLUMN markdown_content TYPE TEXT;
