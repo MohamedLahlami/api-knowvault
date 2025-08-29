@@ -1,0 +1,104 @@
+/* Login Page Specific Styles */
+.login-pf-brand {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.login-pf-brand img {
+    max-height: 60px;
+    width: auto;
+}
+
+.login-pf-brand h1 {
+    color: var(--text-color);
+    font-size: 32px;
+    font-weight: 700;
+    margin: 20px 0 0 0;
+    letter-spacing: -1px;
+}
+
+.login-pf-form {
+    width: 100%;
+}
+
+.login-pf-form .form-group:last-child {
+    margin-bottom: 30px;
+}
+
+.login-pf-signup {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.login-pf-signup p {
+    color: var(--text-light);
+    font-size: 14px;
+    margin: 0 0 10px 0;
+}
+
+.login-pf-signup a {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-pf-signup a:hover {
+    text-decoration: underline;
+}
+
+/* Remember Me Checkbox */
+.login-pf-settings {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.login-pf-settings .checkbox {
+    margin: 0;
+}
+
+.login-pf-settings a {
+    font-size: 14px;
+    color: var(--primary-color);
+}
+
+/* Error Messages */
+.kc-feedback-text {
+    color: var(--error-color);
+    font-size: 14px;
+    margin-top: 5px;
+    display: block;
+}
+
+.has-error .form-control {
+    border-color: var(--error-color);
+}
+
+.has-error .form-control:focus {
+    border-color: var(--error-color);
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* Required Field Indicator */
+.required::after {
+    content: " *";
+    color: var(--error-color);
+    font-weight: bold;
+}
+
+/* Login Title */
+.kc-page-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.kc-page-title h1 {
+    color: var(--text-color);
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
