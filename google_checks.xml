@@ -14,9 +14,6 @@
         </module>
         <module name="EqualsHashCode"/>
         <module name="FinalClass"/>
-        <module name="FinalLocalVariable">
-            <property name="applyToAll" value="false"/>
-        </module>
         <module name="GenericWhitespace"/>
         <module name="IllegalThrows"/>
         <module name="InnerTypeLast"/>
