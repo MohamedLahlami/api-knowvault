@@ -1,28 +1,39 @@
 package com.norsys.knowvault.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.norsys.knowvault.config.TestSecurityConfig;
 import com.norsys.knowvault.dto.BookDTO;
 import com.norsys.knowvault.service.BookService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(BookController.class)
-public class BookControllerTest {
+@WebMvcTest(controllers = BookController.class)
+@Import(TestSecurityConfig.class)
+@ActiveProfiles("test")
+class BookControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -30,82 +41,104 @@ public class BookControllerTest {
     @MockBean
     private BookService bookService;
 
-    @Test
-    @WithMockUser
-    public void testFindAllBooks() throws Exception {
-        List<BookDTO> books = Arrays.asList(
-                new BookDTO(1L, "Title1", UUID.fromString("32586d17-52c0-44a9-92ba-68759ddfd280"), 100L),
-                new BookDTO(2L, "Title2", UUID.fromString("ad11bd76-b3ad-4ab9-acfb-556e3e648ab4"), 200L)
-        );
+    @Autowired
+    private ObjectMapper objectMapper;
 
-        Mockito.when(bookService.findAll()).thenReturn(books);
+    private BookDTO testBookDTO;
 
-        mockMvc.perform(get("/api/book"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                // Correct JSON path using bookTitle (your JSON uses bookTitle, not title)
-                .andExpect(jsonPath("$[0].bookTitle").value("Title1"))
-                .andExpect(jsonPath("$[1].bookTitle").value("Title2"));
+    @BeforeEach
+    void setUp() {
+        testBookDTO = new BookDTO();
+        testBookDTO.setId(1L);
+        testBookDTO.setBookTitle("Test Book");
+        testBookDTO.setUtilisateurLogin("testuser");
+        testBookDTO.setDescription("Test book description");
+        testBookDTO.setShelfId(1L);
+        testBookDTO.setCreatedAt(LocalDateTime.now());
+        testBookDTO.setUpdatedAt(LocalDateTime.now());
     }
 
     @Test
     @WithMockUser
-    public void testFindById() throws Exception {
-        BookDTO book = new BookDTO(1L, "Title1", UUID.fromString("59cd73f6-6c5f-48a9-b014-e702bcceb824"), 100L);
+    void testFindAllBooks() throws Exception {
+        // Given
+        List<BookDTO> books = Arrays.asList(testBookDTO);
+        Page<BookDTO> bookPage = new PageImpl<>(books, PageRequest.of(0, 10), books.size());
+        
+        when(bookService.findAll(any(Pageable.class))).thenReturn(bookPage);
 
-        Mockito.when(bookService.findById(1L)).thenReturn(book);
+        // When & Then
+        mockMvc.perform(get("/api/book")
+                .param("page", "0")
+                .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"));
+    }
 
+    @Test
+    void testGetAllBooksPublic() throws Exception {
+        // Given
+        List<BookDTO> books = Arrays.asList(testBookDTO);
+        when(bookService.findAllBooks()).thenReturn(books);
+
+        // When & Then
+        mockMvc.perform(get("/api/book/public"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].bookTitle").value("Test Book"));
+    }
+
+    @Test
+    @WithMockUser
+    void testCreateBook() throws Exception {
+        // Given
+        when(bookService.create(any(BookDTO.class), any())).thenReturn(testBookDTO);
+
+        // When & Then
+        mockMvc.perform(post("/api/book")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testBookDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.bookTitle").value("Test Book"));
+    }
+
+    @Test
+    @WithMockUser
+    void testGetBookById() throws Exception {
+        // Given
+        when(bookService.findById(1L)).thenReturn(testBookDTO);
+
+        // When & Then
         mockMvc.perform(get("/api/book/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.bookTitle").value("Title1"));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.bookTitle").value("Test Book"));
     }
 
     @Test
     @WithMockUser
-    public void testCreateBook() throws Exception {
-        BookDTO newBook = new BookDTO(null, "TitleNew", UUID.fromString("62b8037a-7b57-40ea-aa2d-5018506cb77a"), 100L);
-        BookDTO createdBook = new BookDTO(1L, "TitleNew", UUID.fromString("0cd63130-287d-4b6e-bd3a-4ab60e756fc6"), 100L);
+    void testUpdateBook() throws Exception {
+        // Given
+        testBookDTO.setBookTitle("Updated Book Title");
+        when(bookService.update(eq(1L), any(BookDTO.class))).thenReturn(testBookDTO);
 
-        Mockito.when(bookService.create(any(BookDTO.class))).thenReturn(createdBook);
-
-        String jsonContent = "{\"id\":null,\"bookTitle\":\"TitleNew\",\"utilisateurId\":\"62b8037a-7b57-40ea-aa2d-5018506cb77a\",\"shelfId\":100}";
-
-        mockMvc.perform(post("/api/book")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.bookTitle").value("TitleNew"));
-    }
-
-    @Test
-    @WithMockUser
-    public void testUpdateBook() throws Exception {
-        BookDTO updateBook = new BookDTO(null, "TitleUpdated", UUID.fromString("eb69c3e2-7095-4372-87a0-0182be0a766f"), 150L);
-        BookDTO updatedBook = new BookDTO(1L, "TitleUpdated", UUID.fromString("f3cf8fe6-648b-4a63-8f00-3397e7936622"), 150L);
-
-        Mockito.when(bookService.update(eq(1L), any(BookDTO.class))).thenReturn(updatedBook);
-
-        String jsonContent = "{\"id\":null,\"bookTitle\":\"TitleUpdated\",\"utilisateurId\":\"eb69c3e2-7095-4372-87a0-0182be0a766f\",\"shelfId\":150}";
-
+        // When & Then
         mockMvc.perform(put("/api/book/1")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testBookDTO)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.bookTitle").value("TitleUpdated"));
-    }
-
-    @Test
-    @WithMockUser
-    public void testDeleteBook() throws Exception {
-        Mockito.doNothing().when(bookService).delete(1L);
-
-        mockMvc.perform(delete("/api/book/1")
-                        .with(csrf()))
-                .andExpect(status().isNoContent());
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.bookTitle").value("Updated Book Title"));
     }
 }

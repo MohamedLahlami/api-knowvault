@@ -1,27 +1,37 @@
 package com.norsys.knowvault.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.norsys.knowvault.config.TestSecurityConfig;
 import com.norsys.knowvault.dto.ShelfDTO;
+import com.norsys.knowvault.dto.TagDTO;
+import com.norsys.knowvault.service.Impl.FileStorageService;
 import com.norsys.knowvault.service.ShelfService;
+import com.norsys.knowvault.service.TagService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ShelfController.class)
-public class ShelfControllerTest {
+@WebMvcTest(controllers = ShelfController.class)
+@Import(TestSecurityConfig.class)
+@ActiveProfiles("test")
+class ShelfControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -29,96 +39,111 @@ public class ShelfControllerTest {
     @MockBean
     private ShelfService shelfService;
 
+    @MockBean
+    private TagService tagService;
+
+    @MockBean
+    private FileStorageService fileStorageService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
+    private ShelfDTO testShelfDTO;
+    private TagDTO testTagDTO;
+
+    @BeforeEach
+    void setUp() {
+        testTagDTO = new TagDTO();
+        testTagDTO.setId(1L);
+        testTagDTO.setLabel("Test Tag");
+
+        testShelfDTO = new ShelfDTO();
+        testShelfDTO.setId(1L);
+        testShelfDTO.setLabel("Test Shelf");
+        testShelfDTO.setDescription("Test shelf description");
+        testShelfDTO.setTag(testTagDTO); // Use setTag instead of setTagId
+        testShelfDTO.setImageName("test.png");
+    }
+
     @Test
     @WithMockUser
-    public void testCreateShelf() throws Exception {
-        ShelfDTO dtoCreated = new ShelfDTO(1L, "LabelNew", "DescriptionNew", null);
+    void testCreateShelf() throws Exception {
+        // Given
+        when(tagService.findById(1L)).thenReturn(testTagDTO);
+        when(fileStorageService.saveFile(any())).thenReturn("/test/image.png");
+        when(shelfService.create(any(ShelfDTO.class))).thenReturn(testShelfDTO);
 
-        Mockito.when(shelfService.create(Mockito.any(ShelfDTO.class))).thenReturn(dtoCreated);
+        MockMultipartFile imageFile = new MockMultipartFile(
+                "image", "test.png", "image/png", "test image content".getBytes());
 
-        ShelfDTO dtoRequest = new ShelfDTO();
-        dtoRequest.setLabel("LabelNew");
-        dtoRequest.setDescription("DescriptionNew");
-        dtoRequest.setTag(null);
-
-        String jsonRequest = objectMapper.writeValueAsString(dtoRequest);
-
-        mockMvc.perform(post("/api/shelf")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
+        // When & Then
+        mockMvc.perform(multipart("/api/shelf")
+                .file(imageFile)
+                .with(csrf())
+                .param("label", "Test Shelf")
+                .param("description", "Test shelf description")
+                .param("tagId", "1"))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.label", is("LabelNew")))
-                .andExpect(jsonPath("$.description", is("DescriptionNew")));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.label").value("Test Shelf"));
     }
 
     @Test
-    @WithMockUser
-    public void testFindAllShelves() throws Exception {
-        List<ShelfDTO> shelves = Arrays.asList(
-                new ShelfDTO(1L, "Label1", "Description1", null),
-                new ShelfDTO(2L, "Label2", "Description2", null)
-        );
+    void testGetAllShelves() throws Exception {
+        // Given
+        List<ShelfDTO> shelves = Arrays.asList(testShelfDTO);
+        when(shelfService.findAll()).thenReturn(shelves);
 
-        Mockito.when(shelfService.findAll()).thenReturn(shelves);
-
-        mockMvc.perform(get("/api/shelf"))
+        // When & Then
+        mockMvc.perform(get("/api/shelf/public"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].label", is("Label1")))
-                .andExpect(jsonPath("$[1].label", is("Label2")));
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].label").value("Test Shelf"));
     }
 
     @Test
     @WithMockUser
-    public void testFindById() throws Exception {
-        ShelfDTO dto = new ShelfDTO(1L, "Label1", "Description1", null);
+    void testGetShelfById() throws Exception {
+        // Given
+        when(shelfService.findById(1L)).thenReturn(testShelfDTO);
 
-        Mockito.when(shelfService.findById(1L)).thenReturn(dto);
-
+        // When & Then
         mockMvc.perform(get("/api/shelf/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.label", is("Label1")))
-                .andExpect(jsonPath("$.description", is("Description1")));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.label").value("Test Shelf"));
     }
 
     @Test
     @WithMockUser
-    public void testUpdateShelf() throws Exception {
-        ShelfDTO dtoUpdated = new ShelfDTO(1L, "LabelUpdated", "DescriptionUpdated", null);
+    void testUpdateShelf() throws Exception {
+        // Given
+        testShelfDTO.setLabel("Updated Shelf Label");
+        when(shelfService.update(eq(1L), any(ShelfDTO.class))).thenReturn(testShelfDTO);
 
-        Mockito.when(shelfService.update(Mockito.eq(1L), Mockito.any(ShelfDTO.class))).thenReturn(dtoUpdated);
-
-        ShelfDTO dtoRequest = new ShelfDTO();
-        dtoRequest.setLabel("LabelUpdated");
-        dtoRequest.setDescription("DescriptionUpdated");
-        dtoRequest.setTag(null);
-
-        String jsonRequest = objectMapper.writeValueAsString(dtoRequest);
-
+        // When & Then
         mockMvc.perform(put("/api/shelf/1")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testShelfDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.label", is("LabelUpdated")))
-                .andExpect(jsonPath("$.description", is("DescriptionUpdated")));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.label").value("Updated Shelf Label"));
     }
 
     @Test
     @WithMockUser
-    public void testDeleteShelf() throws Exception {
-        Mockito.doNothing().when(shelfService).delete(1L);
+    void testDeleteShelf() throws Exception {
+        // Given - mock service to not throw any exception
 
+        // When & Then
         mockMvc.perform(delete("/api/shelf/1")
-                        .with(csrf()))
+                .with(csrf()))
                 .andExpect(status().isNoContent());
     }
 }

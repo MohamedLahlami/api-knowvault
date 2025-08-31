@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/test
+
+  flyway:
+    enabled: false
+
+keycloak:
+  admin:
+    server-url: http://localhost:8080/
+    client-id: test-client
+    realm: test-realm
+    client-secret: test-secret
+    grant-type: client_credentials
+
+ai:
+  summarizer:
+    base-url: http://localhost:5001
