@@ -16,7 +16,7 @@ cache:
 # Lint stage - Check code style with Google Java Style
 lint:
   stage: lint
-  image: maven:3.9.5-openjdk-17
+  image: maven:3.9-openjdk-17
   script:
     - mvn $MAVEN_CLI_OPTS checkstyle:check
   artifacts:
@@ -31,7 +31,7 @@ lint:
 # Test stage - Run unit tests
 test:
   stage: test
-  image: maven:3.9.5-openjdk-17
+  image: maven:3.9-openjdk-17
   services:
     - postgres:15
   variables:
@@ -57,7 +57,7 @@ test:
 # Build stage - Compile the application
 build:
   stage: build
-  image: maven:3.9.5-openjdk-17
+  image: maven:3.9-openjdk-17
   script:
     - mvn $MAVEN_CLI_OPTS clean compile
   artifacts:
@@ -68,7 +68,7 @@ build:
 # Package stage - Create JAR file
 package:
   stage: package
-  image: maven:3.9.5-openjdk-17
+  image: maven:3.9-openjdk-17
   script:
     - mvn $MAVEN_CLI_OPTS clean package -DskipTests
   artifacts:
@@ -103,7 +103,7 @@ docker-build:
 # Security scanning (optional)
 security-scan:
   stage: test
-  image: maven:3.9.5-openjdk-17
+  image: maven:3.9-openjdk-17
   script:
     - mvn $MAVEN_CLI_OPTS org.owasp:dependency-check-maven:check
   artifacts:
