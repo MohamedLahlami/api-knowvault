@@ -40,7 +40,9 @@ public class TagDTO {
     }
 
     public static Tag toEntity(TagDTO dto) {
-        if (dto == null) return null;
+        if (dto == null) {
+            return null;
+        }
         return Tag.builder()
                 .id(dto.getId())
                 .label(dto.getLabel())

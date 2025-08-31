@@ -22,7 +22,8 @@ public class PageServiceImpl implements PageService {
     @Override
     public PageDTO create(PageDTO dto) {
         Chapter chapter = chapterRepository.findById(dto.getChapterId())
-                .orElseThrow(() -> new RuntimeException("Chapitre introuvable avec ID = " + dto.getChapterId()));
+                .orElseThrow(() -> new RuntimeException("Chapitre introuvable avec ID = "
+                        + dto.getChapterId()));
 
         Page page = new Page();
         page.setPageNumber(dto.getPageNumber());
@@ -66,7 +67,9 @@ public class PageServiceImpl implements PageService {
         }
         if (dto.getChapterId() != null) {
             Chapter chapter = chapterRepository.findById(dto.getChapterId())
-                    .orElseThrow(() -> new RuntimeException("Chapitre introuvable avec ID = " + dto.getChapterId()));
+                    .orElseThrow(() -> new RuntimeException("Chapitre introuvable avec ID = "
+                            + dto.getChapterId()));
+            page.setChapter(chapter);
         }
 
         page = pageRepository.save(page);

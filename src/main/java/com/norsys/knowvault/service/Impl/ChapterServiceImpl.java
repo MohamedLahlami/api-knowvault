@@ -25,8 +25,8 @@ public class ChapterServiceImpl implements ChapterService {
                 .orElseThrow(() -> new RuntimeException("Livre introuvable avec ID = "
                         + dto.getBookId()));
 
-        boolean exists = chapterRepository.existsByChapterTitleAndBook(dto.getChapterTitle(),
-                book);
+        boolean exists = chapterRepository.existsByChapterTitleAndBook(
+                dto.getChapterTitle(), book);
         if (exists) {
             throw new DuplicateChapterException("Un chapitre avec ce nom existe déjà pour ce livre.");
         }

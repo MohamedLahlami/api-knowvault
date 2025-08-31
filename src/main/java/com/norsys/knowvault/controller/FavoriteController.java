@@ -45,9 +45,11 @@ public class FavoriteController {
         try {
             favoriteService.deleteFavoriteById(id);
             return ResponseEntity.noContent().build();
-        } catch (FavoriteNotFoundException e) {
+        }
+        catch (FavoriteNotFoundException e) {
             return ResponseEntity.notFound().build();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
