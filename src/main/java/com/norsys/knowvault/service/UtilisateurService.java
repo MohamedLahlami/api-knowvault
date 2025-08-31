@@ -9,6 +9,6 @@ import java.util.List;
 public interface UtilisateurService {
     List<UtilisateurDTO> getAll();
     UtilisateurDTO getUtilisateurByLogin(String login);
-    public Utilisateur ensureUserExistsFromJwt(Jwt jwt) ;
+    Utilisateur ensureUserExistsFromJwt(Jwt jwt);
 
 }

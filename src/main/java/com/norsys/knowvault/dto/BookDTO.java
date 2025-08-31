@@ -28,7 +28,9 @@ public class BookDTO {
 
 
     public static BookDTO toDto(Book book) {
-        if (book == null) return null;
+        if (book == null) {
+            return null;
+        }
 
         BookDTO dto = new BookDTO();
         dto.setId(book.getId());

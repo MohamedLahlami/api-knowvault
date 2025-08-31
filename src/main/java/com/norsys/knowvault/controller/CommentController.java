@@ -18,7 +18,8 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<CommentDTO> create(@RequestBody CommentDTO dto, Authentication authentication) {
+    public ResponseEntity<CommentDTO> create(@RequestBody CommentDTO dto,
+            Authentication authentication) {
         CommentDTO created = commentService.create(dto, authentication);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }

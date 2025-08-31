@@ -49,7 +49,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public org.springframework.data.domain.Page<CommentDTO> searchByContent(String query, Pageable pageable) {
+    public org.springframework.data.domain.Page<CommentDTO> searchByContent(String query,
+            Pageable pageable) {
         return commentRepository.findByTextContainingIgnoreCase(query, pageable)
                 .map(CommentDTO::toDto);
     }

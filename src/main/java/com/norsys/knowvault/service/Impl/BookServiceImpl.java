@@ -67,7 +67,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Page<BookDTO> searchByTitle(String bookTitle, Pageable pageable) {
-        Page<Book> booksPage = bookRepository.findByBookTitleContainingIgnoreCase(bookTitle, pageable);
+        Page<Book> booksPage = bookRepository
+                .findByBookTitleContainingIgnoreCase(bookTitle, pageable);
         return booksPage.map(BookDTO::toDto);
     }
 
@@ -83,8 +84,12 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Livre introuvable"));
 
-        if (dto.getBookTitle() != null) book.setBookTitle(dto.getBookTitle());
-        if (dto.getUtilisateurLogin() != null) book.setUtilisateurLogin(dto.getUtilisateurLogin());
+        if (dto.getBookTitle() != null) {
+            book.setBookTitle(dto.getBookTitle());
+        }
+        if (dto.getUtilisateurLogin() != null) {
+            book.setUtilisateurLogin(dto.getUtilisateurLogin());
+        }
 
         if (dto.getShelfId() != null) {
             Shelf shelf = shelfRepository.findById(dto.getShelfId())
@@ -92,7 +97,9 @@ public class BookServiceImpl implements BookService {
             book.setShelf(shelf);
         }
 
-        if (dto.getDescription() != null) book.setDescription(dto.getDescription());
+        if (dto.getDescription() != null) {
+            book.setDescription(dto.getDescription());
+        }
 
         book.setUpdatedAt(LocalDateTime.now());
 

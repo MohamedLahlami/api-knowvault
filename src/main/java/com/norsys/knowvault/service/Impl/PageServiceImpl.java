@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service@RequiredArgsConstructor
+@Service
+@RequiredArgsConstructor
 public class PageServiceImpl implements PageService {
 
     private final PageRepository pageRepository;
@@ -66,7 +67,6 @@ public class PageServiceImpl implements PageService {
         if (dto.getChapterId() != null) {
             Chapter chapter = chapterRepository.findById(dto.getChapterId())
                     .orElseThrow(() -> new RuntimeException("Chapitre introuvable avec ID = " + dto.getChapterId()));
-            page.setChapter(chapter);
         }
 
         page = pageRepository.save(page);

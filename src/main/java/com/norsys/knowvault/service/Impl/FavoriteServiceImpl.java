@@ -90,7 +90,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public List<FavoriteDTO> OnlyFavoritesForUser() {
+    public List<FavoriteDTO> onlyFavoritesForUser() {
         Utilisateur user = getCurrentUser();
 
         return favoriteRepository.findByUser(user)

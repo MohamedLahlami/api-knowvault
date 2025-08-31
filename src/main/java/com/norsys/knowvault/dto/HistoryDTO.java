@@ -16,7 +16,9 @@ public class HistoryDTO {
     private Long pageId;
 
     public static HistoryDTO toDto(History h) {
-        if (h == null) return null;
+        if (h == null) {
+            return null;
+        }
 
         HistoryDTO dto = new HistoryDTO();
         dto.setId(h.getId());

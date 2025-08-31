@@ -17,7 +17,9 @@ public class CommentDTO {
     private Long pageId;
 
     public static CommentDTO toDto(Comment comment) {
-        if (comment == null) return null;
+        if (comment == null) {
+            return null;
+        }
 
         CommentDTO dto = new CommentDTO();
         dto.setId(comment.getId());

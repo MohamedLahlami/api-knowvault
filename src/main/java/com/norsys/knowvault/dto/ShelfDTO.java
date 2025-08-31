@@ -25,7 +25,9 @@ public class ShelfDTO {
     private TagDTO tag;
 
     public static ShelfDTO toDto(Shelf e) {
-        if (e == null) return null;
+        if (e == null) {
+            return null;
+        }
 
         ShelfDTO dto = new ShelfDTO();
         dto.setId(e.getId());

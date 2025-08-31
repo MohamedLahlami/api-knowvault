@@ -247,7 +247,7 @@ class FavoriteServiceTest {
             when(favoriteRepository.findByUser(testUser)).thenReturn(List.of(testFavorite));
 
             // When
-            List<FavoriteDTO> result = favoriteService.OnlyFavoritesForUser();
+            List<FavoriteDTO> result = favoriteService.onlyFavoritesForUser();
 
             // Then
             assertNotNull(result);

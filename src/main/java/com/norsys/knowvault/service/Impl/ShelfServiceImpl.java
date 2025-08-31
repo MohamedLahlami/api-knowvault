@@ -68,9 +68,15 @@ public class ShelfServiceImpl implements ShelfService {
         Shelf shelf = shelfRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Etagère introuvable"));
 
-        if (dto.getLabel() != null) shelf.setLabel(dto.getLabel());
-        if (dto.getDescription() != null) shelf.setDescription(dto.getDescription());
-        if (dto.getImageName() != null) shelf.setImageName(dto.getImageName());
+        if (dto.getLabel() != null) {
+            shelf.setLabel(dto.getLabel());
+        }
+        if (dto.getDescription() != null) {
+            shelf.setDescription(dto.getDescription());
+        }
+        if (dto.getImageName() != null) {
+            shelf.setImageName(dto.getImageName());
+        }
 
         if (dto.getTag() != null && dto.getTag().getId() != null) {
             TagDTO tagDTO = tagService.findById(dto.getTag().getId());

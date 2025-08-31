@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public class CustomAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
     public static final String CLAIM_KEY = "roles";
-    private final String ROLE_PREFIX = "ROLE_";
+    private final String rolePrefix = "ROLE_";
 
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter =
         new JwtGrantedAuthoritiesConverter();
@@ -41,15 +41,14 @@ public class CustomAuthenticationConverter implements Converter<Jwt, AbstractAut
     }
 
     private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
-        String AUTHORITY_CLAIM_NAME = "realm_access";
-        var resourceAccess = new HashMap<>(jwt.getClaim(AUTHORITY_CLAIM_NAME));
+        String authorityClaimName = "realm_access";
+        var resourceAccess = new HashMap<>(jwt.getClaim(authorityClaimName));
         Collection<String> resourceRoles;
 
         resourceRoles = (Collection<String>) resourceAccess.get(CLAIM_KEY);
         return resourceRoles
             .stream()
-            .map(role -> new SimpleGrantedAuthority(ROLE_PREFIX + role))
+            .map(role -> new SimpleGrantedAuthority(rolePrefix + role))
             .collect(Collectors.toSet());
     }
 }
-

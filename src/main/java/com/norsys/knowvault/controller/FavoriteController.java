@@ -37,7 +37,7 @@ public class FavoriteController {
 
     @GetMapping("/only")
     public ResponseEntity<List<FavoriteDTO>> getOnlyFavoritesForUser() {
-        List<FavoriteDTO> favorites = favoriteService.OnlyFavoritesForUser();
+        List<FavoriteDTO> favorites = favoriteService.onlyFavoritesForUser();
         return ResponseEntity.ok(favorites);
     }
     @DeleteMapping("/{id}")

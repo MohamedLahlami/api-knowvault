@@ -17,7 +17,9 @@ public class ChapterDTO {
     private Long bookId;
 
     public static ChapterDTO toDto(Chapter chapter) {
-        if (chapter == null) return null;
+        if (chapter == null) {
+            return null;
+        }
 
         ChapterDTO dto = new ChapterDTO();
         dto.setId(chapter.getId());
