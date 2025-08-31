@@ -54,8 +54,9 @@ public class ShelfController {
 
     @GetMapping("/paginated")
     public ResponseEntity<Page<ShelfDTO>> getPaginatedShelves(
-            @RequestParam(defaultValue = "0") int page) {
-        Page<ShelfDTO> shelfPage = shelfService.findAllPaginated(page, 3);
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<ShelfDTO> shelfPage = shelfService.findAllPaginated(page, size);
         return ResponseEntity.ok(shelfPage);
     }
 
