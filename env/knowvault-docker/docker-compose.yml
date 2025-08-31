@@ -24,7 +24,6 @@ services:
       - 8080:8080
     volumes:
       - ./data:/opt/keycloak/data/import
-      - ./Knowvault-KC-theme:/opt/keycloak/themes/Knowvault-KC-theme
     depends_on:
       - db-knowvault
 
