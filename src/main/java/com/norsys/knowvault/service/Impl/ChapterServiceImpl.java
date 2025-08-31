@@ -28,7 +28,8 @@ public class ChapterServiceImpl implements ChapterService {
         boolean exists = chapterRepository.existsByChapterTitleAndBook(
                 dto.getChapterTitle(), book);
         if (exists) {
-            throw new DuplicateChapterException("Un chapitre avec ce nom existe déjà pour ce livre.");
+            throw new DuplicateChapterException("Un chapitre avec ce nom existe déjà "
+                    + "pour ce livre.");
         }
 
         Chapter chapter = new Chapter();
