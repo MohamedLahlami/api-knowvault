@@ -72,7 +72,8 @@ public class FavoriteServiceImpl implements FavoriteService {
         if (existing.isPresent()) {
             favoriteRepository.delete(existing.get());
             return null;
-        } else {
+        }
+        else {
             Favorite fav = Favorite.builder()
                     .user(user)
                     .page(page)
