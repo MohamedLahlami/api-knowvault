@@ -18,7 +18,9 @@ public class TagDTO {
     private long value;
 
     public static TagDTO toDto(Tag tag) {
-        if (tag == null) return null;
+        if (tag == null) {
+            return null;
+        }
 
         TagDTO dto = new TagDTO();
         dto.setId(tag.getId());
@@ -29,11 +31,18 @@ public class TagDTO {
     }
 
     public static List<TagDTO> toDtoList(List<Tag> tags) {
-        return tags.stream().map(TagDTO::toDto).collect(Collectors.toList());
+        if (tags == null) {
+            return null;
+        }
+        return tags.stream()
+                .map(TagDTO::toDto)
+                .toList();
     }
 
     public static Tag toEntity(TagDTO dto) {
-        if (dto == null) return null;
+        if (dto == null) {
+            return null;
+        }
         return Tag.builder()
                 .id(dto.getId())
                 .label(dto.getLabel())

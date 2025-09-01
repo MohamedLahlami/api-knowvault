@@ -18,7 +18,9 @@ public class FavoriteDTO {
 
 
     public static FavoriteDTO toDto(Favorite f) {
-        if (f == null) return null;
+        if (f == null) {
+            return null;
+        }
 
         FavoriteDTO dto = new FavoriteDTO();
         dto.setId(f.getId());

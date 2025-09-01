@@ -48,8 +48,12 @@ public class HistoryServiceImpl implements HistoryService {
         History history = historyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Historiy introuvable"));
 
-        if (dto.getModificationDate() != null) history.setModificationDate(dto.getModificationDate());
-        if (dto.getModificationType() != null) history.setModificationType(dto.getModificationType());
+        if (dto.getModificationDate() != null) {
+            history.setModificationDate(dto.getModificationDate());
+        }
+        if (dto.getModificationType() != null) {
+            history.setModificationType(dto.getModificationType());
+        }
 
         if (dto.getPageId() != null) {
             Page p = pageRepository.findById(dto.getPageId())

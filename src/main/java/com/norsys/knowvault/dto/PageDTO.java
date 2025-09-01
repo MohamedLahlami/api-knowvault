@@ -21,7 +21,9 @@ public class PageDTO {
     private Long chapterId;
 
     public static PageDTO toDto(Page page) {
-        if (page == null) return null;
+        if (page == null) {
+            return null;
+        }
 
         PageDTO dto = new PageDTO();
         dto.setId(page.getId());

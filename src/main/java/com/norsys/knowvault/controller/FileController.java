@@ -31,7 +31,8 @@ public class FileController {
         try {
             String fileName = fileStorageService.saveFile(file);
             return ResponseEntity.ok(fileName);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed");
         }
     }

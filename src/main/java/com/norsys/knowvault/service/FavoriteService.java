@@ -8,7 +8,7 @@ import java.util.UUID;
 public interface FavoriteService {
 
     List<FavoriteDTO> getFavoritesByUser();
-   List<FavoriteDTO> OnlyFavoritesForUser();
+    List<FavoriteDTO> onlyFavoritesForUser();
     void deleteFavoriteById(Long id);
     FavoriteDTO toggleFavorite(Long pageId);
 }

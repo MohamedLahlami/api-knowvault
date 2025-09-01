@@ -72,7 +72,8 @@ public class FavoriteServiceImpl implements FavoriteService {
         if (existing.isPresent()) {
             favoriteRepository.delete(existing.get());
             return null;
-        } else {
+        }
+        else {
             Favorite fav = Favorite.builder()
                     .user(user)
                     .page(page)
@@ -90,7 +91,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public List<FavoriteDTO> OnlyFavoritesForUser() {
+    public List<FavoriteDTO> onlyFavoritesForUser() {
         Utilisateur user = getCurrentUser();
 
         return favoriteRepository.findByUser(user)

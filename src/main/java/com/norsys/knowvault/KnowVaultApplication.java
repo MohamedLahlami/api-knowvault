@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class KnowVaultApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(KnowVaultApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(KnowVaultApplication.class, args);
+    }
 
 }
