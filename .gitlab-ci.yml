@@ -86,15 +86,13 @@ docker-build:
   services:
     - docker:24.0.5-dind
   variables:
+    # Use the overlayfs driver for improved performance
+    DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_HOST: "tcp://docker:2376"
-    DOCKER_TLS_VERIFY: "1"
-    DOCKER_CERT_PATH: "/certs/client"
   before_script:
-    - until docker info; do sleep 1; done
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker info
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
   script:
-    # Build once and tag multiple times
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" -t "$CI_REGISTRY_IMAGE:latest" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
     - docker push "$CI_REGISTRY_IMAGE:latest"
